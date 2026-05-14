@@ -30,6 +30,7 @@ import MentorApply from './pages/MentorApply';
 import MentorApplications from './pages/MentorApplications';
 import MentorLogin from './pages/MentorLogin';
 import MentorPortal from './pages/MentorPortal';
+import SetPasswordPage from './pages/SetPasswordPage';
 
 // --- HELPER COMPONENTS ---
 
@@ -173,6 +174,7 @@ function App() {
         <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
         <Route path="/admin-login" element={<GuestRoute><Login /></GuestRoute>} />
         <Route path="/mentee/login" element={<GuestRoute><MenteeLogin /></GuestRoute>} />
+        <Route path="/mentee/set-password/:token" element={<SetPasswordPage />} />
         <Route path="/mentor/login" element={<GuestRoute><MentorLogin /></GuestRoute>} />
 
         {/* Admin Routes - WITH Sidebar */}

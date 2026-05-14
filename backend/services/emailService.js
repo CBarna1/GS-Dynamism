@@ -41,13 +41,13 @@ const sendWelcomeEmail = async (menteeEmail, menteeName, activationToken) => {
     };
   }
 
-  // In backend/services/emailService.js
-  const activationLink = `${process.env.FRONTEND_URL}/activate/${activationToken}`;
+  // For mentee approval: link should be to password-setting page
+  const activationLink = `${process.env.FRONTEND_URL}/mentee/set-password/${activationToken}`;
   
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: menteeEmail,
-    subject: 'Welcome to Guiding Stars - Activate Your Account',
+    subject: 'Welcome to Guiding Stars - Set Your Password',
     html: `
       <!DOCTYPE html>
       <html>
@@ -109,16 +109,17 @@ const sendWelcomeEmail = async (menteeEmail, menteeName, activationToken) => {
             <h2>Congratulations, ${menteeName}!</h2>
             <p>We are excited to inform you that your application to the Guiding Stars Mentorship Program has been <strong>approved</strong>!</p>
             
-            <p>To get started, please activate your account by clicking the button below:</p>
+            <p>To complete your account setup, please set a password by clicking the button below:</p>
             
             <div style="text-align: center;">
-              <a href="${activationLink}" class="button">🚀 Activate My Account</a>
+              <a href="${activationLink}" class="button">🔐 Set My Password</a>
             </div>
             
-            <p><strong>This activation link will expire in 7 days.</strong></p>
+            <p><strong>This activation link will expire in 24 hours.</strong></p>
             
-            <p>Once activated, you will be able to:</p>
+            <p>Once you set your password, you will be able to:</p>
             <ul>
+              <li>✓ Access your mentee dashboard</li>
               <li>✓ View your mentor profile</li>
               <li>✓ Track your progress</li>
               <li>✓ Access program resources</li>
