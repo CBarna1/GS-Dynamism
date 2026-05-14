@@ -1,5 +1,5 @@
 // src/pages/MentorLogin.tsx
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
@@ -13,6 +13,12 @@ function MentorLogin() {
   
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
+
+  // Clear admin/mentee tokens when accessing mentor login page
+  useEffect(() => {
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('mentee_token');
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
