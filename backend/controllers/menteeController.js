@@ -89,24 +89,26 @@ exports.updateMentee = async (req, res) => {
     const oldStatus = mentee.application_status;
     const newStatus = application_status;
 
-    if (newStatus === 'active' && oldStatus !== 'active') {
-      // Admin approved - generate password-setting token
-      // Account stays in 'pending' until password is set (via activateAccount)
+    // Admin approved the application
+    if (newStatus === 'approved' && oldStatus !== 'approved') {
+      // Generate password-setting token
       const verificationToken = generateVerificationToken();
       const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
       await mentee.update({
-        application_status: 'pending',  // Stay pending until password is set
+        application_status: 'approved',  // Mark as approved
         verification_token: verificationToken,
         verification_token_expires: tokenExpiry,
         email_verified: false
       });
 
       // Send approval email with password-setting link
+      console.log('📧 Sending approval email to:', mentee.email);
       try {
         await sendWelcomeEmail(mentee.email, mentee.first_name, verificationToken);
+        console.log('✅ Approval email sent successfully to:', mentee.email);
       } catch (emailErr) {
-        console.error('Approval email failed:', emailErr.message);
+        console.error('❌ Approval email failed:', emailErr.message);
       }
     } 
     else if (newStatus === 'rejected' && oldStatus !== 'rejected') {
@@ -114,7 +116,7 @@ exports.updateMentee = async (req, res) => {
       try {
         await sendRejectionEmail(mentee.email, mentee.first_name);
       } catch (emailErr) {
-        console.error('Rejection email failed:', emailErr.message);
+        console.error('❌ Rejection email failed:', emailErr.message);
       }
     } 
     else {
