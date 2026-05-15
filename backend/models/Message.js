@@ -10,7 +10,7 @@ const Message = sequelize.define('Message', {
   },
   recipient_id: { type: DataTypes.INTEGER, allowNull: false },
   match_id: { type: DataTypes.INTEGER, allowNull: true }, // Link to Match table
-  content: { type: DataTypes.LONGTEXT, allowNull: false },
+  content: { type: DataTypes.TEXT('long'), allowNull: false },
   read_at: { type: DataTypes.DATE, allowNull: true },
 }, {
   tableName: 'messages',
