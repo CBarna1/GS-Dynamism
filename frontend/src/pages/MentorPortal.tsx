@@ -329,8 +329,7 @@ function MentorPortal() {
               {data.matches.map((match) => (
                 <div
                   key={match.id}
-                  onClick={() => setSelectedMatch(match)}
-                  className="border border-gray-200 rounded-lg p-6 hover:shadow-md hover:border-orange-300 transition cursor-pointer"
+                  className="border border-gray-200 rounded-lg p-6 hover:shadow-md hover:border-orange-300 transition"
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
@@ -341,6 +340,12 @@ function MentorPortal() {
                       {match.mentee?.phone && (
                         <p className="text-gray-600 text-sm">{match.mentee.phone}</p>
                       )}
+                      <button
+                        onClick={() => navigate('/mentor/messages')}
+                        className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm font-medium"
+                      >
+                        📧 Message {match.mentee?.first_name}
+                      </button>
                     </div>
                     <div className="text-right">
                       <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeClass(match.status)}`}>
