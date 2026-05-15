@@ -191,12 +191,23 @@ function MentorPortal() {
             </h1>
             <p className="text-gray-600 mt-1">Your Mentor Portal</p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-medium"
-          >
-            Logout
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => navigate('/mentor/messages')}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Messages
+            </button>
+            <button
+              onClick={handleLogout}
+              className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-medium"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
 
@@ -289,10 +300,16 @@ function MentorPortal() {
           </div>
 
           <div className="mt-8 flex gap-4">
-            <button className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-medium">
+            <button
+              onClick={() => navigate('/mentor/edit-profile')}
+              className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-medium"
+            >
               Edit Profile
             </button>
-            <button className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-medium">
+            <button
+              onClick={() => navigate('/mentor/change-password')}
+              className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-medium"
+            >
               Change Password
             </button>
           </div>

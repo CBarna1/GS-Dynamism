@@ -33,6 +33,7 @@ app.use('/api/content', require('./routes/content'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/mentor-applications', require('./routes/mentorApplications'));
 app.use('/api/mentor-portal', require('./routes/mentorPortal'));
+app.use('/api/messages', require('./routes/messages'));
 
 // SPA Fallback using middleware (works with Express 5)
 app.use((req, res) => {
