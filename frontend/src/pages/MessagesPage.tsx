@@ -254,19 +254,20 @@ export default function MessagesPage() {
             </div>
 
             {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 bg-gray-50">
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type a message..."
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                  autoFocus
+                  className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-base"
                 />
                 <button
                   type="submit"
                   disabled={sending || !newMessage.trim()}
-                  className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                  className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"
                 >
                   {sending ? 'Sending...' : 'Send'}
                 </button>
@@ -274,8 +275,9 @@ export default function MessagesPage() {
             </form>
           </>
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            <p>Select a conversation to start messaging</p>
+          <div className="flex items-center justify-center h-full flex-col text-gray-500 gap-4">
+            <p className="text-lg">Select a conversation to start messaging</p>
+            <p className="text-sm">Click on any name from the left to begin</p>
           </div>
         )}
       </div>
@@ -335,19 +337,20 @@ export default function MessagesPage() {
                 })}
               </div>
 
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 bg-gray-50">
+              <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder="Type a message..."
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
+                    autoFocus
+                    className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-base"
                   />
                   <button
                     type="submit"
                     disabled={sending || !newMessage.trim()}
-                    className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                   >
                     Send
                   </button>

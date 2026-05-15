@@ -142,7 +142,7 @@ function RootRedirect() {
 function App() {
   const location = window.location.pathname;
   
-  // Don't show navbar in admin routes (they have their own layout) or on login pages
+  // Don't show navbar in admin routes (they have their own layout), portal routes (dashboards, messages, settings), or on login pages
   const isAdminRoute = location.startsWith('/dashboard') || 
                        location.startsWith('/mentees') || 
                        location.startsWith('/mentors') || 
@@ -159,7 +159,7 @@ function App() {
                         location.startsWith('/mentor/change-password');
   const isLoginPage = location === '/login' || location === '/mentee/login' || location.startsWith('/mentor/login');
   const isActivationPage = location.startsWith('/activate') || location === '/verify-email' || location.startsWith('/mentee/set-password');
-  const showNavbar = !isAdminRoute && !isPortalRoute && !isLoginPage && !isActivationPage;
+  const showNavbar = !isAdminRoute && !isPortalRoute && !isLoginPage && !isActivationPage && location !== '/messages';
 
   return (
     <Router>
