@@ -76,7 +76,6 @@ function MentorPortal() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [, setSelectedMatch] = useState<Match | null>(null);
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
 
