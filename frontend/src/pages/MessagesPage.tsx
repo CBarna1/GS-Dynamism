@@ -47,6 +47,9 @@ export default function MessagesPage() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('theme') === 'dark';
+  });
 
   // Get user info from token
   useEffect(() => {
@@ -72,6 +75,13 @@ export default function MessagesPage() {
     const interval = setInterval(fetchConversations, 5000); // Refresh every 5s
     return () => clearInterval(interval);
   }, [user]);
+
+  // Auto-select first conversation when available
+  useEffect(() => {
+    if (conversations.length > 0 && !selectedMatchId) {
+      setSelectedMatchId(conversations[0].matchId);
+    }
+  }, [conversations, selectedMatchId]);
 
   const fetchConversations = async () => {
     try {
@@ -153,26 +163,36 @@ export default function MessagesPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-orange-50 to-white">
+      <div className={`flex items-center justify-center h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-orange-50 to-white'}`}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading messages...</p>
+          <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Loading messages...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className={`flex h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Left Panel: Conversations */}
-      <div className="w-full md:w-1/3 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-orange-400 to-orange-600 text-white">
+      <div className={`w-full md:w-1/3 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r flex flex-col`}>
+        <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-orange-400 to-orange-600 text-white flex justify-between items-center">
           <h2 className="text-xl font-bold">Messages {unreadCount > 0 && <span className="text-sm bg-red-500 px-2 py-1 rounded-full ml-2">{unreadCount}</span>}</h2>
+          <button
+            onClick={() => {
+              setIsDarkMode(!isDarkMode);
+              localStorage.setItem('theme', !isDarkMode ? 'dark' : 'light');
+            }}
+            className="p-2 hover:bg-orange-500/30 rounded-lg transition"
+            title={isDarkMode ? 'Light Mode' : 'Dark Mode'}
+          >
+            {isDarkMode ? '☀️' : '🌙'}
+          </button>
         </div>
 
         <div className="flex-1 overflow-y-auto">
           {conversations.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">
+            <div className={`p-4 text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
               <p>No conversations yet</p>
             </div>
           ) : (
@@ -180,18 +200,20 @@ export default function MessagesPage() {
               <div
                 key={conv.matchId}
                 onClick={() => setSelectedMatchId(conv.matchId)}
-                className={`p-4 border-b border-gray-100 cursor-pointer transition ${
+                className={`p-4 border-b cursor-pointer transition ${
+                  isDarkMode ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-100 hover:bg-gray-50'
+                } ${
                   selectedMatchId === conv.matchId
-                    ? 'bg-orange-50 border-l-4 border-l-orange-500'
-                    : 'hover:bg-gray-50'
+                    ? isDarkMode ? 'bg-orange-900/30 border-l-4 border-l-orange-500' : 'bg-orange-50 border-l-4 border-l-orange-500'
+                    : ''
                 }`}
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-800">{conv.otherPerson.name}</h3>
-                    <p className="text-sm text-gray-500">{conv.otherPerson.role}</p>
+                    <h3 className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-800'}`}>{conv.otherPerson.name}</h3>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{conv.otherPerson.role}</p>
                     {conv.lastMessage && (
-                      <p className="text-sm text-gray-600 truncate mt-1">{conv.lastMessage.content}</p>
+                      <p className={`text-sm truncate mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{conv.lastMessage.content}</p>
                     )}
                   </div>
                   {conv.unreadCount > 0 && (
@@ -207,7 +229,7 @@ export default function MessagesPage() {
       </div>
 
       {/* Right Panel: Chat */}
-      <div className="hidden md:flex md:w-2/3 flex-col bg-white">
+      <div className={`hidden md:flex md:w-2/3 flex-col ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
         {selectedMatchId ? (
           <>
             {/* Chat Header */}
@@ -220,62 +242,73 @@ export default function MessagesPage() {
             </div>
 
             {/* Messages */}
-            <div id="message-list" className="flex-1 overflow-y-auto p-4 space-y-4">
-              {messages.map((msg) => {
-                const isOwn = msg.sender_id === user?.id;
-                const senderName =
-                  msg.SenderMentee?.first_name
-                    ? `${msg.SenderMentee.first_name} ${msg.SenderMentee.last_name}`
-                    : msg.SenderMentor?.User
-                    ? `${msg.SenderMentor.User.first_name} ${msg.SenderMentor.User.last_name}`
-                    : 'Unknown';
+            <div id="message-list" className={`flex-1 overflow-y-auto p-4 space-y-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+              {messages.length === 0 ? (
+                <div className={`flex items-center justify-center h-full text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p>No messages yet. Start the conversation!</p>
+                </div>
+              ) : (
+                messages.map((msg) => {
+                  const isOwn = msg.sender_id === user?.id;
+                  const senderName =
+                    msg.SenderMentee?.first_name
+                      ? `${msg.SenderMentee.first_name} ${msg.SenderMentee.last_name}`
+                      : msg.SenderMentor?.User
+                      ? `${msg.SenderMentor.User.first_name} ${msg.SenderMentor.User.last_name}`
+                      : 'Unknown';
 
-                return (
-                  <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
-                    <div
-                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        isOwn
-                          ? 'bg-orange-500 text-white rounded-br-none'
-                          : 'bg-gray-200 text-gray-900 rounded-bl-none'
-                      }`}
-                    >
-                      {!isOwn && <p className="text-xs font-semibold mb-1 opacity-70">{senderName}</p>}
-                      <p className="text-sm break-words">{msg.content}</p>
-                      <p className="text-xs opacity-70 mt-1">
-                        {new Date(msg.created_at).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </p>
+                  return (
+                    <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                      <div
+                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                          isOwn
+                            ? 'bg-orange-500 text-white rounded-br-none'
+                            : isDarkMode ? 'bg-gray-700 text-gray-100 rounded-bl-none' : 'bg-gray-200 text-gray-900 rounded-bl-none'
+                        }`}
+                      >
+                        {!isOwn && <p className="text-xs font-semibold mb-1 opacity-70">{senderName}</p>}
+                        <p className="text-sm break-words">{msg.content}</p>
+                        <p className="text-xs opacity-70 mt-1">
+                          {new Date(msg.created_at).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
 
             {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+            <form onSubmit={handleSendMessage} className={`p-4 border-t flex-shrink-0 ${isDarkMode ? 'border-gray-700 bg-gray-700' : 'border-gray-200 bg-gray-50'}`}>
               <div className="flex gap-2">
-                <input
-                  type="text"
+                <textarea
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type a message..."
                   autoFocus
-                  className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-base"
+                  rows={2}
+                  className={`flex-1 px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 text-base resize-none ${
+                    isDarkMode
+                      ? 'bg-gray-600 border-gray-500 text-gray-100 placeholder-gray-400 focus:border-orange-500'
+                      : 'bg-white border-gray-300 text-gray-900 focus:border-orange-500'
+                  }`}
                 />
                 <button
                   type="submit"
                   disabled={sending || !newMessage.trim()}
-                  className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"
+                  className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold flex items-center gap-2"
                 >
+                  <span>📤</span>
                   {sending ? 'Sending...' : 'Send'}
                 </button>
               </div>
             </form>
           </>
         ) : (
-          <div className="flex items-center justify-center h-full flex-col text-gray-500 gap-4">
+          <div className={`flex items-center justify-center h-full flex-col gap-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
             <p className="text-lg">Select a conversation to start messaging</p>
             <p className="text-sm">Click on any name from the left to begin</p>
           </div>
@@ -291,7 +324,7 @@ export default function MessagesPage() {
         >
           <div className="fixed inset-0 bg-black/25" aria-hidden="true" />
           <div className="fixed inset-0 flex items-center justify-center p-4">
-            <Dialog.Panel className="w-full h-full max-w-md rounded-lg bg-white flex flex-col">
+            <Dialog.Panel className={`w-full h-full max-w-md rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} flex flex-col`}>
               <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-orange-400 to-orange-600 text-white flex justify-between items-center">
                 <h2 className="text-lg font-bold">
                   {conversations.find(c => c.matchId === selectedMatchId)?.otherPerson.name}
@@ -304,55 +337,66 @@ export default function MessagesPage() {
                 </button>
               </div>
 
-              <div id="message-list-mobile" className="flex-1 overflow-y-auto p-4 space-y-4">
-                {messages.map((msg) => {
-                  const isOwn = msg.sender_id === user?.id;
-                  const senderName =
-                    msg.SenderMentee?.first_name
-                      ? `${msg.SenderMentee.first_name} ${msg.SenderMentee.last_name}`
-                      : msg.SenderMentor?.User
-                      ? `${msg.SenderMentor.User.first_name} ${msg.SenderMentor.User.last_name}`
-                      : 'Unknown';
+              <div id="message-list-mobile" className={`flex-1 overflow-y-auto p-4 space-y-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                {messages.length === 0 ? (
+                  <div className={`flex items-center justify-center h-full text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <p>No messages yet. Start the conversation!</p>
+                  </div>
+                ) : (
+                  messages.map((msg) => {
+                    const isOwn = msg.sender_id === user?.id;
+                    const senderName =
+                      msg.SenderMentee?.first_name
+                        ? `${msg.SenderMentee.first_name} ${msg.SenderMentee.last_name}`
+                        : msg.SenderMentor?.User
+                        ? `${msg.SenderMentor.User.first_name} ${msg.SenderMentor.User.last_name}`
+                        : 'Unknown';
 
-                  return (
-                    <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
-                      <div
-                        className={`max-w-xs px-4 py-2 rounded-lg ${
-                          isOwn
-                            ? 'bg-orange-500 text-white rounded-br-none'
-                            : 'bg-gray-200 text-gray-900 rounded-bl-none'
-                        }`}
-                      >
-                        {!isOwn && <p className="text-xs font-semibold mb-1 opacity-70">{senderName}</p>}
-                        <p className="text-sm break-words">{msg.content}</p>
-                        <p className="text-xs opacity-70 mt-1">
-                          {new Date(msg.created_at).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </p>
+                    return (
+                      <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                        <div
+                          className={`max-w-xs px-4 py-2 rounded-lg ${
+                            isOwn
+                              ? 'bg-orange-500 text-white rounded-br-none'
+                              : isDarkMode ? 'bg-gray-700 text-gray-100 rounded-bl-none' : 'bg-gray-200 text-gray-900 rounded-bl-none'
+                          }`}
+                        >
+                          {!isOwn && <p className="text-xs font-semibold mb-1 opacity-70">{senderName}</p>}
+                          <p className="text-sm break-words">{msg.content}</p>
+                          <p className="text-xs opacity-70 mt-1">
+                            {new Date(msg.created_at).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
 
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
+              <form onSubmit={handleSendMessage} className={`p-4 border-t flex-shrink-0 ${isDarkMode ? 'border-gray-700 bg-gray-700' : 'border-gray-200 bg-gray-50'}`}>
+                <div className="flex gap-2 flex-col">
+                  <textarea
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder="Type a message..."
                     autoFocus
-                    className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-base"
+                    rows={2}
+                    className={`flex-1 px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 text-base resize-none ${
+                      isDarkMode
+                        ? 'bg-gray-600 border-gray-500 text-gray-100 placeholder-gray-400 focus:border-orange-500'
+                        : 'bg-white border-gray-300 text-gray-900 focus:border-orange-500'
+                    }`}
                   />
                   <button
                     type="submit"
                     disabled={sending || !newMessage.trim()}
-                    className="px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                    className="px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed font-semibold w-full flex items-center justify-center gap-2"
                   >
-                    Send
+                    <span>📤</span>
+                    {sending ? 'Sending...' : 'Send'}
                   </button>
                 </div>
               </form>
