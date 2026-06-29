@@ -43,13 +43,15 @@ exports.createMentee = async (req, res) => {
   try {
     const { first_name, last_name, email, phone, background, goals, preferences } = req.body;
 
+    // Validate required fields
+    if (!first_name || !last_name || !email) {
+      return res.status(400).json({ success: false, message: 'First name, last name, and email are required.' });
+    }
+
     const existingMentee = await Mentee.findOne({ where: { email } });
     if (existingMentee) {
       return res.status(400).json({ success: false, message: 'Email already registered.' });
     }
-
-    const rawToken = generateVerificationToken();
-    const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
 
     const mentee = await Mentee.create({
       first_name,
@@ -59,15 +61,14 @@ exports.createMentee = async (req, res) => {
       background: background || '',
       goals: goals || '',
       preferences: preferences || '',
+      password_hash: null,  // No password yet - will be set after admin approval
       application_status: 'pending',
       email_verified: false,
-      verification_token: rawToken,
-      verification_token_expires: tokenExpiry
+      verification_token: null,
+      verification_token_expires: null
     });
 
-    await sendWelcomeEmail(mentee.email, mentee.first_name, rawToken);
-
-    res.status(201).json({ success: true, message: 'Application submitted!', data: mentee });
+    res.status(201).json({ success: true, message: 'Application submitted! You will receive an email once approved.', data: mentee });
   } catch (error) {
     console.error('Create Mentee Error:', error);
     res.status(400).json({ success: false, message: error.message });
@@ -88,21 +89,26 @@ exports.updateMentee = async (req, res) => {
     const oldStatus = mentee.application_status;
     const newStatus = application_status;
 
+    // Admin approved the application
     if (newStatus === 'approved' && oldStatus !== 'approved') {
+      // Generate password-setting token
       const verificationToken = generateVerificationToken();
-      const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
       await mentee.update({
-        ...req.body,
+        application_status: 'approved',  // Mark as approved
         verification_token: verificationToken,
         verification_token_expires: tokenExpiry,
         email_verified: false
       });
 
+      // Send approval email with password-setting link
+      console.log('📧 Sending approval email to:', mentee.email);
       try {
         await sendWelcomeEmail(mentee.email, mentee.first_name, verificationToken);
+        console.log('✅ Approval email sent successfully to:', mentee.email);
       } catch (emailErr) {
-        console.error('❌ Email sending failed:', emailErr.message);
+        console.error('❌ Approval email failed:', emailErr.message);
       }
     } 
     else if (newStatus === 'rejected' && oldStatus !== 'rejected') {

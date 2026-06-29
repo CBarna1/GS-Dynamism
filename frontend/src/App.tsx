@@ -30,6 +30,10 @@ import MentorApply from './pages/MentorApply';
 import MentorApplications from './pages/MentorApplications';
 import MentorLogin from './pages/MentorLogin';
 import MentorPortal from './pages/MentorPortal';
+import SetPasswordPage from './pages/SetPasswordPage';
+import MessagesPage from './pages/MessagesPage';
+import EditMentorProfile from './pages/EditMentorProfile';
+import ChangeMentorPassword from './pages/ChangeMentorPassword';
 
 // --- HELPER COMPONENTS ---
 
@@ -138,7 +142,7 @@ function RootRedirect() {
 function App() {
   const location = window.location.pathname;
   
-  // Don't show navbar in admin routes (they have their own layout) or on login pages
+  // Don't show navbar in admin routes (they have their own layout), portal routes (dashboards, messages, settings), or on login pages
   const isAdminRoute = location.startsWith('/dashboard') || 
                        location.startsWith('/mentees') || 
                        location.startsWith('/mentors') || 
@@ -147,9 +151,15 @@ function App() {
                        location.startsWith('/content') ||
                        location.startsWith('/submissions') ||
                        location.startsWith('/mentor-applications');
-  const isLoginPage = location === '/login' || location === '/mentee/login';
-  const isActivationPage = location.startsWith('/activate') || location === '/verify-email';
-  const showNavbar = !isAdminRoute && !isLoginPage && !isActivationPage;
+  const isPortalRoute = location.startsWith('/mentee/dashboard') || 
+                        location.startsWith('/mentee/messages') ||
+                        location.startsWith('/mentor/portal') ||
+                        location.startsWith('/mentor/messages') ||
+                        location.startsWith('/mentor/edit-profile') ||
+                        location.startsWith('/mentor/change-password');
+  const isLoginPage = location === '/login' || location === '/mentee/login' || location.startsWith('/mentor/login');
+  const isActivationPage = location.startsWith('/activate') || location === '/verify-email' || location.startsWith('/mentee/set-password');
+  const showNavbar = !isAdminRoute && !isPortalRoute && !isLoginPage && !isActivationPage && location !== '/messages';
 
   return (
     <Router>
@@ -173,6 +183,7 @@ function App() {
         <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
         <Route path="/admin-login" element={<GuestRoute><Login /></GuestRoute>} />
         <Route path="/mentee/login" element={<GuestRoute><MenteeLogin /></GuestRoute>} />
+        <Route path="/mentee/set-password/:token" element={<SetPasswordPage />} />
         <Route path="/mentor/login" element={<GuestRoute><MentorLogin /></GuestRoute>} />
 
         {/* Admin Routes - WITH Sidebar */}
@@ -223,11 +234,31 @@ function App() {
             <MenteeLayout><MenteeDashboard /></MenteeLayout>
           </ProtectedRoute>
         } />
+        <Route path="/mentee/messages" element={
+          <ProtectedRoute requiredRole="mentee">
+            <MenteeLayout><MessagesPage /></MenteeLayout>
+          </ProtectedRoute>
+        } />
 
         {/* Mentor Routes - WITHOUT Sidebar (has its own header) */}
         <Route path="/mentor/portal" element={
           <ProtectedRoute requiredRole="mentor">
             <MenteeLayout><MentorPortal /></MenteeLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/mentor/messages" element={
+          <ProtectedRoute requiredRole="mentor">
+            <MenteeLayout><MessagesPage /></MenteeLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/mentor/edit-profile" element={
+          <ProtectedRoute requiredRole="mentor">
+            <MenteeLayout><EditMentorProfile /></MenteeLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/mentor/change-password" element={
+          <ProtectedRoute requiredRole="mentor">
+            <MenteeLayout><ChangeMentorPassword /></MenteeLayout>
           </ProtectedRoute>
         } />
 

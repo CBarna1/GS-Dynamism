@@ -149,6 +149,15 @@ function MenteeDashboard() {
                 {data.mentee.first_name} {data.mentee.last_name}
               </span>
               <button
+                onClick={() => navigate('/mentee/messages')}
+                className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-white hover:bg-blue-600 rounded-lg transition font-medium"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span className="hidden sm:inline">Messages</span>
+              </button>
+              <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-white hover:bg-orange-500 rounded-lg transition font-medium"
               >
@@ -259,6 +268,15 @@ function MenteeDashboard() {
                     <p className="text-gray-700 text-sm">{data.mentor.bio}</p>
                   </div>
                 )}
+                <button
+                  onClick={() => navigate('/mentee/messages')}
+                  className="mt-4 w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  Message {data.mentor.User.first_name}
+                </button>
               </div>
             ) : (
               <div className="text-center py-8">

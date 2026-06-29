@@ -31,7 +31,15 @@ const ApplyPage = () => {
     console.log('Sending data:', formData);
 
     try {
-      const response = await api.post('/mentees', formData);
+      const response = await api.post('/mentees', {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email,
+        phone: formData.phone,
+        background: formData.background,
+        goals: formData.goals,
+        preferences: formData.preferences
+      });
 
       console.log('Response:', response.data);
 
