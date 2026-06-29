@@ -9,6 +9,9 @@ const { initializeDatabase } = require('./config/db');
 // 2. Import the models index (this handles connection AND associations)
 const { sequelize } = require('./models/index'); 
 
+// 3. Import SEO routes
+const setupSEORoutes = require('./routes/seo');
+
 const app = express();
 
 // Middleware
@@ -19,6 +22,9 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files from frontend dist directory (built React frontend)
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+// SEO Routes (robots.txt, sitemap.xml, etc.) - MUST be before API routes
+setupSEORoutes(app);
 
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
