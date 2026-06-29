@@ -4,7 +4,8 @@
 
 import { Helmet } from 'react-helmet-async';
 import { useMemo } from 'react';
-import { getSEOMetadata, SITE_CONFIG, SEOMetadata } from '../config/seo';
+import { getSEOMetadata, SITE_CONFIG } from '../config/seo';
+import type { SEOMetadata } from '../config/seo';
 
 interface UseSEOProps {
   pageName?: string;

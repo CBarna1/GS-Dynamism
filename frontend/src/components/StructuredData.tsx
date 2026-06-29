@@ -102,13 +102,11 @@ export function FAQSchema(
  * Review/Rating Schema
  */
 export function ReviewSchema({
-  itemName,
-  reviewRating,
   reviewCount,
   ratingValue,
 }: {
-  itemName: string;
-  reviewRating: number;
+  itemName?: string;
+  reviewRating?: number;
   reviewCount: number;
   ratingValue: number;
 }) {

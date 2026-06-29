@@ -19,7 +19,7 @@ export interface SEOMetadata {
 // Site-wide configuration
 export const SITE_CONFIG = {
   name: 'Guiding Stars',
-  baseURL: process.env.REACT_APP_BASE_URL || 'https://guidingstars.com',
+  baseURL: import.meta.env.VITE_APP_BASE_URL || 'https://guidingstars.com',
   description: 'Connect with mentors and mentees in a thriving community for professional growth.',
   socialImage: 'https://guidingstars.com/og-image.png',
   twitterHandle: '@guidingstars',
