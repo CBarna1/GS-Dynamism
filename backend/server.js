@@ -19,11 +19,18 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// SEO Routes (robots.txt, sitemap.xml, etc.) - MUST be BEFORE static files
+// SEO Routes (robots.txt, sitemap.xml, etc.) - MUST be FIRST before anything else
 setupSEORoutes(app);
 
-// Serve static files from frontend dist directory (built React frontend)
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
+// Serve static files ONLY for specific file types, not as catch-all
+app.use(express.static(path.join(__dirname, '../frontend/dist'), {
+  // Don't serve HTML files from static (let SPA handle routing)
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html') && !filePath.includes('index.html')) {
+      res.status(404).end();
+    }
+  }
+}));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // API Routes

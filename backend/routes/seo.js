@@ -9,8 +9,9 @@ module.exports = function setupSEORoutes(app) {
    * Tells search engines which pages to crawl
    */
   app.get('/robots.txt', (req, res) => {
-    res.type('text/plain');
-    res.send(`# Guiding Stars Robots.txt
+    console.log('[SEO] robots.txt requested');
+    res.setHeader('Content-Type', 'text/plain');
+    res.status(200).send(`# Guiding Stars Robots.txt
 # Allow search engines to crawl all public pages
 
 User-agent: *
@@ -41,9 +42,9 @@ Sitemap: ${process.env.SITE_URL || 'https://guidingstars.com'}/sitemap.xml
   /**
    * GET /sitemap.xml
    * XML sitemap for search engines
-   * In production, you might want to generate this dynamically from your database
    */
   app.get('/sitemap.xml', (req, res) => {
+    console.log('[SEO] sitemap.xml requested');
     const baseUrl = process.env.SITE_URL || 'https://guidingstars.com';
     const lastmod = new Date().toISOString().split('T')[0];
 
@@ -59,8 +60,7 @@ Sitemap: ${process.env.SITE_URL || 'https://guidingstars.com'}/sitemap.xml
       { path: '/apply', priority: '0.9', changefreq: 'daily' },
     ];
 
-    res.type('application/xml');
-    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0">
@@ -74,7 +74,11 @@ ${urls
   </url>`
   )
   .join('\n')}
-</urlset>`);
+</urlset>`;
+
+    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Content-Length', Buffer.byteLength(xml));
+    res.status(200).send(xml);
   });
 
   /**
