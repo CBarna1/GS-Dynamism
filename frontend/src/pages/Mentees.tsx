@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import Sidebar from '../components/Sidebar';
 import { AuthContext } from '../context/AuthContext';
+import { SEOHelmet } from '../hooks/useSEO';
 
 interface Mentee {
   id: number;
@@ -173,6 +174,10 @@ const Mentees = () => {
       className="min-h-screen overflow-x-hidden"
       style={{
         backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("/img/corporate image 3.jpeg")',
+    }}
+    >
+      {/* SEO Meta Tags */}
+      <SEOHelmet pageName="mentees" />
         backgroundAttachment: 'fixed',
         backgroundSize: 'cover',
         backgroundPosition: 'center'

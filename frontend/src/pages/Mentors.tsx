@@ -1,6 +1,7 @@
 import { useEffect, useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import api from '../services/api';
+import { SEOHelmet } from '../hooks/useSEO';
 
 interface Mentor {
   id: number;
@@ -137,6 +138,10 @@ const Mentors = () => {
       className="min-h-screen"
       style={{
         backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("/img/corporate image 3.jpeg")',
+    }}
+    >
+      {/* SEO Meta Tags */}
+      <SEOHelmet pageName="mentors" />
         backgroundAttachment: 'fixed',
         backgroundSize: 'cover',
         backgroundPosition: 'center'

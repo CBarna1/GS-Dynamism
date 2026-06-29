@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import api from '../services/api';
+import { SEOHelmet } from '../hooks/useSEO';
 
 // Font Awesome imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -58,6 +59,9 @@ const Home = () => {
 
   return (
     <div className="bg-white overflow-x-hidden">
+      {/* SEO Meta Tags */}
+      <SEOHelmet pageName="home" />
+      
       <Navbar />
 
       {/* Hero Section with Carousel */}

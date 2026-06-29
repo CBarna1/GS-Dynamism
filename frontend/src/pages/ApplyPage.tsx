@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import api from '../services/api';
+import { SEOHelmet } from '../hooks/useSEO';
 
 const ApplyPage = () => {
   const [formData, setFormData] = useState({
@@ -105,6 +106,9 @@ const ApplyPage = () => {
 
   return (
     <>
+      {/* SEO Meta Tags */}
+      <SEOHelmet pageName="apply" />
+      
       <Navbar />
       <div
         className="min-h-screen py-12 px-4"

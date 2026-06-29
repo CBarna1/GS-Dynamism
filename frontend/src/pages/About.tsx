@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { SEOHelmet } from '../hooks/useSEO';
 
 const faqs = [
   {
@@ -41,6 +42,9 @@ const About = () => {
 
   return (
     <div className="bg-white min-h-screen">
+      {/* SEO Meta Tags */}
+      <SEOHelmet pageName="about" />
+      
       <Navbar />
 
       {/* Hero Section */}

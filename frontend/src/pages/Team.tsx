@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { SEOHelmet } from '../hooks/useSEO';
 
 // Hero carousel images
 const heroImages = [
@@ -86,6 +87,9 @@ const Team = () => {
 
   return (
     <div className="bg-white overflow-x-hidden">
+      {/* SEO Meta Tags */}
+      <SEOHelmet pageName="team" />
+      
       <Navbar />
 
       {/* Hero Section with Carousel */}
