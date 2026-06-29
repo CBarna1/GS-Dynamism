@@ -138,15 +138,13 @@ const Mentors = () => {
       className="min-h-screen"
       style={{
         backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("/img/corporate image 3.jpeg")',
-    }}
-    >
-      {/* SEO Meta Tags */}
-      <SEOHelmet pageName="mentors" />
         backgroundAttachment: 'fixed',
         backgroundSize: 'cover',
         backgroundPosition: 'center'
       }}
     >
+      {/* SEO Meta Tags */}
+      <SEOHelmet pageName="mentors" />
       <div className="max-w-7xl mx-auto p-4 md:p-6">
 
         {/* Header */}

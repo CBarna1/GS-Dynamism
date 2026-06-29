@@ -174,15 +174,13 @@ const Mentees = () => {
       className="min-h-screen overflow-x-hidden"
       style={{
         backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("/img/corporate image 3.jpeg")',
-    }}
-    >
-      {/* SEO Meta Tags */}
-      <SEOHelmet pageName="mentees" />
         backgroundAttachment: 'fixed',
         backgroundSize: 'cover',
         backgroundPosition: 'center'
       }}
     >
+      {/* SEO Meta Tags */}
+      <SEOHelmet pageName="mentees" />
       <Sidebar />
 
       {/*
