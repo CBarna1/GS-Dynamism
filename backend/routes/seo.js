@@ -35,7 +35,7 @@ Disallow: /private/
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: ${process.env.SITE_URL || 'https://guidingstars.com'}/sitemap.xml
+Sitemap: ${process.env.SITE_URL || 'https://guidingstarszm.com'}/sitemap.xml
 `);
   });
 
@@ -45,7 +45,7 @@ Sitemap: ${process.env.SITE_URL || 'https://guidingstars.com'}/sitemap.xml
    */
   app.get('/sitemap.xml', (req, res) => {
     console.log('[SEO] sitemap.xml requested');
-    const baseUrl = process.env.SITE_URL || 'https://guidingstars.com';
+    const baseUrl = process.env.SITE_URL || 'https://guidingstarszm.com';
     const lastmod = new Date().toISOString().split('T')[0];
 
     // Define your site URLs
@@ -87,7 +87,7 @@ ${urls
    */
   app.get('/sitemap-mentors.xml', async (req, res) => {
     try {
-      const baseUrl = process.env.SITE_URL || 'https://guidingstars.com';
+      const baseUrl = process.env.SITE_URL || 'https://guidingstarszm.com';
 
       // TODO: In production, fetch mentors from database
       // const mentors = await Mentor.findAll();
