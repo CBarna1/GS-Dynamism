@@ -2,18 +2,15 @@
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
-// Create email transporter (Namecheap mail server)
+// Create email transporter (Zoho Mail SMTP)
 const transporter = nodemailer.createTransport({
-  host: 'mail.guidingstarszm.com',
-  port: 587,
-  secure: false,
+  host: 'smtp.zoho.com',
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD,
   },
-  tls: {
-    rejectUnauthorized: false
-  }
 });
 
 // Verify transporter at startup to get immediate errors
