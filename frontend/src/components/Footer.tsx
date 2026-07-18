@@ -35,7 +35,7 @@ const Footer = () => {
               About Us
             </h4>
             <p className="text-gray-400 text-sm leading-relaxed">
-              {content.footer_about || 'Guiding Stars is a non-profit organization committed to nurturing the next generation of leaders through quality mentorship and professional development.'}
+              {content.footer_about || 'Guiding Stars is a non-profit mentorship organization committed to nurturing the next generation of leaders through quality mentorship and professional development.'}
             </p>
           </div>
 
