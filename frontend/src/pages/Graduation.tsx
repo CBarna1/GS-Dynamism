@@ -253,6 +253,65 @@ const Graduation = () => {
           </div>
 
           <div className="space-y-12 md:space-y-16">
+
+            {/* Press statement layout for structured cohorts (e.g. cohort5) */}
+            {(data as any).pressStatement && (
+              <>
+                <div className="space-y-5">
+                  {(data as any).pressStatement.paragraphs.map((para: string, i: number) => (
+                    <p key={i} className="text-gray-700 leading-relaxed text-sm md:text-base text-justify">{para}</p>
+                  ))}
+
+                  <blockquote className="border-l-4 pl-6 py-3 bg-orange-50 rounded-r-lg" style={{ borderColor: '#FF9148' }}>
+                    <p className="text-gray-700 leading-relaxed text-sm md:text-base italic text-justify">
+                      &ldquo;{(data as any).pressStatement.quote}&rdquo;
+                    </p>
+                  </blockquote>
+
+                  <p className="text-gray-700 leading-relaxed text-sm md:text-base text-justify">
+                    {(data as any).pressStatement.awardsIntro}
+                  </p>
+
+                  <div className="bg-gray-50 rounded-lg p-5 md:p-6">
+                    <h4 className="font-bold text-gray-800 mb-4 text-base md:text-lg">
+                      {(data as any).pressStatement.awardsTitle}
+                    </h4>
+                    <ul className="space-y-2">
+                      {(data as any).pressStatement.awards.map((award: { label: string; name: string; institution: string }, i: number) => (
+                        <li key={i} className="flex items-start gap-2 text-gray-700 text-sm md:text-base">
+                          <span className="mt-1 font-bold" style={{ color: '#FF9148' }}>•</span>
+                          <span><span className="font-semibold">{award.label}:</span> {award.name} &ndash; {award.institution}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {(data as any).pressStatement.closing.map((para: string, i: number) => (
+                    <p key={i} className="text-gray-700 leading-relaxed text-sm md:text-base text-justify">{para}</p>
+                  ))}
+                </div>
+
+                {data.images && data.images.length > 0 && (
+                  <div>
+                    <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">Event Highlights</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                      {data.images.map((image, index) => (
+                        <img
+                          key={index}
+                          src={image}
+                          alt={`Event Image ${index + 1}`}
+                          className="w-full rounded-lg shadow-lg object-cover h-40 md:h-64 hover:scale-105 transition-transform duration-300"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Standard layout for cohorts 1–4 */}
+            {!(data as any).pressStatement && (
+              <>
             {/* Content 1 with Image */}
             <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-center">
               <div className="w-full lg:w-1/2">
@@ -322,6 +381,9 @@ const Graduation = () => {
                   ))}
                 </div>
               </div>
+            )}
+
+              </>
             )}
 
             {/* Future Section */}
