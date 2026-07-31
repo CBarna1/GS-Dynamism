@@ -17,8 +17,7 @@ interface ContentItem {
 
 function ContentManagement() {
   const [contents, setContents] = useState<ContentItem[]>([]);
-  const [selectedPage] = useState<string>('home');
-  const [selectedSection] = useState<string>('hero');
+  const [selectedPage, setSelectedPage] = useState<string>('home');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -38,7 +37,13 @@ function ContentManagement() {
   });
 
   const sections = ['hero', 'about', 'features', 'team', 'testimonials', 'faq', 'footer'];
-  const pages = ['home', 'about', 'team', 'contact', 'apply', 'graduation'];
+  const pages = [
+    { key: 'home',    label: 'Home' },
+    { key: 'about',   label: 'About' },
+    { key: 'team',    label: 'Team' },
+    { key: 'contact', label: 'Contact' },
+    { key: 'global',  label: 'Global / Footer' },
+  ];
 
   useEffect(() => {
     // Load all content once on mount. UI filters locally by page/section.
@@ -161,9 +166,7 @@ function ContentManagement() {
     });
   };
 
-  const filteredContents = contents.filter(
-    (item) => item.page === selectedPage && (selectedSection === 'all' ? true : item.section === selectedSection)
-  );
+  const filteredContents = contents.filter((item) => item.page === selectedPage);
 
   if (loading) return <div className="flex justify-center items-center h-screen text-xl">Loading...</div>;
 
@@ -183,11 +186,22 @@ function ContentManagement() {
         {error && <div className="mb-4 p-4 bg-red-500 text-white rounded">{error}</div>}
         {success && <div className="mb-4 p-4 bg-green-500 text-white rounded">{success}</div>}
 
-        {/* Breadcrumb: Page > Content */}
-        <div className="mb-3 text-sm text-gray-300">
-          Page: <span className="font-semibold text-white ml-2">{selectedPage.charAt(0).toUpperCase() + selectedPage.slice(1)}</span>
-          <span className="mx-2">/</span>
-          <span>Content</span>
+        {/* Page Buttons */}
+        <div className="mb-6 flex flex-wrap gap-3">
+          {pages.map(p => (
+            <button
+              key={p.key}
+              onClick={() => { setSelectedPage(p.key); resetForm(); }}
+              className={`px-5 py-2.5 rounded-lg font-semibold text-sm transition shadow ${
+                selectedPage === p.key
+                  ? 'text-white shadow-lg'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              }`}
+              style={selectedPage === p.key ? { background: 'linear-gradient(135deg, #FF9148, #E8722E)' } : {}}
+            >
+              {p.label}
+            </button>
+          ))}
         </div>
 
         {/* Add Form */}
@@ -246,7 +260,7 @@ function ContentManagement() {
                   onChange={(e) => setFormData({ ...formData, page: e.target.value })}
                   className="w-full px-3 py-2 border rounded"
                 >
-                  {pages.map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
+                  {pages.map(p => <option key={p.key} value={p.key}>{p.label}</option>)}
                 </select>
               </div>
             </div>
@@ -355,7 +369,7 @@ function ContentManagement() {
         <div className="grid gap-4">
           {filteredContents.length === 0 ? (
             <div className="bg-white p-6 rounded text-center text-gray-500">
-              No content in {selectedSection} section. Add one to get started!
+              No content fields for this page yet. Run the seed script on the server or add one manually.
             </div>
           ) : (
             filteredContents.map(item => (
@@ -418,7 +432,7 @@ function ContentManagement() {
                       onChange={(e) => setFormData({ ...formData, page: e.target.value })}
                       className="w-full px-3 py-2 border rounded"
                     >
-                      {pages.map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
+                      {pages.map(p => <option key={p.key} value={p.key}>{p.label}</option>)}
                     </select>
                     {item.content_type === 'image' && formData.value && (
                       <img src={formData.value} alt="Preview" className="mt-3 max-h-48 rounded" />
