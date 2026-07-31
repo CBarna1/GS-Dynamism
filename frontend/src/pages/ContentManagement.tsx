@@ -160,7 +160,7 @@ function ContentManagement() {
       title: '',
       content_type: 'textarea',
       value: '',
-      section: selectedSection || 'hero',
+      section: 'hero',
       page: selectedPage || 'home',
       description: ''
     });
