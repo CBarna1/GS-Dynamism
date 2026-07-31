@@ -249,13 +249,11 @@ const Home = () => {
               {/* Left: Content */}
               <div className="p-8 md:p-12 flex flex-col justify-center">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
-                  Become a{' '}
+                  {content.home_mentor_title || 'Become a'}{' '}
                   <span style={{ color: '#FF9148' }}>Mentor</span>
                 </h2>
                 <p className="text-gray-600 mb-6 leading-relaxed">
-                  Share your expertise and make a real impact on the next generation of professionals. 
-                  Whether you're a seasoned executive, rising manager, or specialist in your field, 
-                  we're looking for passionate mentors.
+                  {content.home_mentor_description || 'Share your expertise and make a real impact on the next generation of professionals. Whether you\'re a seasoned executive, rising manager, or specialist in your field, we\'re looking for passionate mentors.'}
                 </p>
                 <div className="space-y-3 mb-8">
                   <div className="flex items-center gap-3">
@@ -300,10 +298,10 @@ const Home = () => {
       >
         <div className="container mx-auto px-6">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-            Ready to Start Your Journey?
+            {content.home_cta_title || 'Ready to Start Your Journey?'}
           </h2>
           <p className="text-lg md:text-xl mb-8 max-w-3xl mx-auto opacity-95">
-            Join the next cohort of ambitious professionals and transform your career with personalized mentorship.
+            {content.home_cta_description || 'Join the next cohort of ambitious professionals and transform your career with personalized mentorship.'}
           </p>
           <Link
             to="/apply"
@@ -352,16 +350,14 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
             {[
               {
-                img: '/img/Constance Haajila.jpg',
-                name: 'Constance Haajila',
-                quote:
-                  'The mentorship has exceeded my expectation, it has taught me to focus and always show up, I am now ready for opportunities.',
+                img: content.testimonial_1_img || '/img/Constance Haajila.jpg',
+                name: content.testimonial_1_name || 'Constance Haajila',
+                quote: content.testimonial_1_quote || 'The mentorship has exceeded my expectation, it has taught me to focus and always show up, I am now ready for opportunities.',
               },
               {
-                img: '/img/Manuel Mwanza.jpg',
-                name: 'Manuel Mwaala',
-                quote:
-                  'My journey has been about self-discovery resulting into heightened productivity and confidence in my leadership abilities.',
+                img: content.testimonial_2_img || '/img/Manuel Mwanza.jpg',
+                name: content.testimonial_2_name || 'Manuel Mwaala',
+                quote: content.testimonial_2_quote || 'My journey has been about self-discovery resulting into heightened productivity and confidence in my leadership abilities.',
               },
             ].map((t, i) => (
               <div

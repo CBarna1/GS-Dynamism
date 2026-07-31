@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import api from '../services/api';
 import { SEOHelmet } from '../hooks/useSEO';
 
 const Contact = () => {
+  const [content, setContent] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    api.get('/content')
+      .then(res => setContent(res.data?.data || {}))
+      .catch(err => console.error('Failed to load content:', err));
+  }, []);
+
   return (
     <div className="bg-white min-h-screen">
       {/* SEO Meta Tags */}
@@ -21,7 +29,7 @@ const Contact = () => {
         />
         <div className="absolute inset-0 flex items-center justify-center text-center text-white px-6">
           <div className="max-w-4xl">
-            <h1 className="text-5xl md:text-6xl font-bold mb-4">Contact Us</h1>
+            <h1 className="text-5xl md:text-6xl font-bold mb-4">{content.contact_hero_title || 'Contact Us'}</h1>
           </div>
         </div>
       </section>
@@ -34,13 +42,13 @@ const Contact = () => {
             {/* Left: Contact Info */}
             <div className="space-y-8">
               <p className="text-lg text-gray-700 leading-relaxed">
-                Our journey has been marked by a commitment to excellence, a passion for innovation, and a deep belief in the power of collaboration.
+                {content.contact_para_1 || 'Our journey has been marked by a commitment to excellence, a passion for innovation, and a deep belief in the power of collaboration.'}
               </p>
               <p className="text-lg text-gray-700 leading-relaxed">
-                With a team that spans the globe, we bring together diverse talents and perspectives to tackle some of the most challenging problems in our industry.
+                {content.contact_para_2 || 'With a team that spans the globe, we bring together diverse talents and perspectives to tackle some of the most challenging problems in our industry.'}
               </p>
               <p className="text-lg text-gray-700 leading-relaxed">
-                Please reach out to us for any enquiry, collaboration or any partnership and our team will be more than pleased to hear from you.
+                {content.contact_para_3 || 'Please reach out to us for any enquiry, collaboration or any partnership and our team will be more than pleased to hear from you.'}
               </p>
 
               <div className="grid sm:grid-cols-2 gap-8">
@@ -54,7 +62,7 @@ const Contact = () => {
                       onMouseEnter={(e) => (e.currentTarget.style.color = '#FF9148')}
                       onMouseLeave={(e) => (e.currentTarget.style.color = '')}
                     >
-                      +260 973 223 910
+                    {content.contact_phone || '+260 973 223 910'}
                     </a>
                   </div>
                 </div>
@@ -69,7 +77,7 @@ const Contact = () => {
                       onMouseEnter={(e) => (e.currentTarget.style.color = '#FF9148')}
                       onMouseLeave={(e) => (e.currentTarget.style.color = '')}
                     >
-                      info@guidingstarszm.com
+                    {content.contact_email || 'info@guidingstarszm.com'}
                     </a>
                   </div>
                 </div>

@@ -1,20 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { SEOHelmet } from '../hooks/useSEO';
-
-const faqs = [
-  {
-    question: 'What is the duration of the program?',
-    answer:
-      'The Guiding Stars mentorship program is designed to run for a duration of 3 months, allowing mentees sufficient time to benefit from the guidance and resources provided. The program includes regular mentorship sessions, trainings and networking events.',
-  },
-  {
-    question: 'Who is eligible for the program?',
-    answer:
-      'Guiding Stars is open to dedicated students, graduands and emerging professionals ready to shape their future in the world of business.',
-  },
-];
+import api from '../services/api';
 
 const values = [
   { title: 'Authenticity', desc: 'Staying true to our mission, vision, and the people we serve.', icon: '✦' },
@@ -35,6 +23,24 @@ const pillars = [
 
 const About = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [content, setContent] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    api.get('/content')
+      .then(res => setContent(res.data?.data || {}))
+      .catch(err => console.error('Failed to load content:', err));
+  }, []);
+
+  const faqs = [
+    {
+      question: content.about_faq_1_q || 'What is the duration of the program?',
+      answer: content.about_faq_1_a || 'The Guiding Stars mentorship program is designed to run for a duration of 3 months, allowing mentees sufficient time to benefit from the guidance and resources provided. The program includes regular mentorship sessions, trainings and networking events.',
+    },
+    {
+      question: content.about_faq_2_q || 'Who is eligible for the program?',
+      answer: content.about_faq_2_a || 'Guiding Stars is open to dedicated students, graduands and emerging professionals ready to shape their future in the world of business.',
+    },
+  ];
 
   const toggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -56,7 +62,7 @@ const About = () => {
         />
         <div className="absolute inset-0 flex items-center justify-center text-center text-white px-6">
           <div className="max-w-4xl">
-            <h1 className="text-5xl md:text-6xl font-bold mb-4">About Us</h1>
+            <h1 className="text-5xl md:text-6xl font-bold mb-4">{content.about_hero_title || 'About Us'}</h1>
           </div>
         </div>
       </section>
@@ -79,19 +85,13 @@ const About = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-5 text-lg text-gray-700 leading-relaxed">
               <p>
-                Guiding Stars is a non-profit organization founded in 2024 in Zambia, dedicated to
-                advancing excellence in corporate and business education. It serves as a catalyst
-                for nurturing the next generation of leaders by bridging the gap between academic
-                learning and practical experience.
+                {content.about_org_para_1 || 'Guiding Stars is a non-profit organization founded in 2024 in Zambia, dedicated to advancing excellence in corporate and business education. It serves as a catalyst for nurturing the next generation of leaders by bridging the gap between academic learning and practical experience.'}
               </p>
               <p>
-                The organization equips students, graduates, and emerging professionals with the
-                competence, confidence, and character required to excel in today's global business
-                landscape.
+                {content.about_org_para_2 || 'The organization equips students, graduates, and emerging professionals with the competence, confidence, and character required to excel in today\'s global business landscape.'}
               </p>
               <p>
-                Through structured mentorship, leadership training, and community engagement
-                initiatives, it empowers young people to lead with purpose and distinction.
+                {content.about_org_para_3 || 'Through structured mentorship, leadership training, and community engagement initiatives, it empowers young people to lead with purpose and distinction.'}
               </p>
             </div>
 
@@ -112,14 +112,14 @@ const About = () => {
             >
               <h3 className="text-2xl font-bold mb-4">Our Mission</h3>
               <p className="leading-relaxed opacity-95">
-                To foster a dynamic, purpose-driven learning environment where aspiring youth gain the knowledge, skills, and confidence to bridge the gap between academia and real-world practice.
+                {content.about_mission || 'To foster a dynamic, purpose-driven learning environment where aspiring youth gain the knowledge, skills, and confidence to bridge the gap between academia and real-world practice.'}
               </p>
             </div>
 
             <div className="bg-gray-900 p-8 rounded-xl shadow-lg text-white">
               <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
               <p className="leading-relaxed text-gray-300">
-                To Elevate, Educate, Empower, and Transform Futures, together building a generation of leaders equipped to thrive in the global arena.
+                {content.about_vision || 'To Elevate, Educate, Empower, and Transform Futures, together building a generation of leaders equipped to thrive in the global arena.'}
               </p>
             </div>
           </div>

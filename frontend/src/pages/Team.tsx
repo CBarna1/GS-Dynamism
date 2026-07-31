@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { SEOHelmet } from '../hooks/useSEO';
+import api from '../services/api';
 
 // Hero carousel images
 const heroImages = [
@@ -64,8 +65,23 @@ const teamMembers = [
 const Team = () => {
   const [flipped, setFlipped] = useState<number | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [content, setContent] = useState<Record<string, string>>({});
 
-  // Auto-rotate carousel every 5 seconds
+  useEffect(() => {
+    api.get('/content')
+      .then(res => setContent(res.data?.data || {}))
+      .catch(err => console.error('Failed to load content:', err));
+  }, []);
+
+  // Build team members with CMS descriptions at render time
+  const teamWithContent = [
+    { ...teamMembers[0], description: content.team_twaambo_desc || teamMembers[0].description },
+    { ...teamMembers[1], description: content.team_tabitha_desc || teamMembers[1].description },
+    { ...teamMembers[2], description: content.team_edward_desc  || teamMembers[2].description },
+    { ...teamMembers[3], description: content.team_nangoma_desc || teamMembers[3].description },
+    { ...teamMembers[4], description: content.team_chilufya_desc|| teamMembers[4].description },
+    { ...teamMembers[5], description: content.team_lisa_desc    || teamMembers[5].description },
+  ];
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
@@ -143,9 +159,9 @@ const Team = () => {
         <div className="absolute inset-0 flex items-center justify-center text-center text-white px-4">
           <div className="w-full max-w-4xl">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 md:mb-8 leading-tight">
-              MEET OUR TEAM
+              {content.team_hero_title || 'MEET OUR TEAM'}
             </h1>
-            <p className="text-base md:text-xl text-gray-100">Dedicated professionals committed to transforming lives through mentorship</p>
+            <p className="text-base md:text-xl text-gray-100">{content.team_section_subtitle || 'Dedicated professionals committed to transforming lives through mentorship'}</p>
           </div>
         </div>
       </section>
@@ -154,7 +170,7 @@ const Team = () => {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {teamMembers.map((member, index) => (
+            {teamWithContent.map((member, index) => (
               <div
                 key={index}
                 className="h-96 cursor-pointer perspective"
