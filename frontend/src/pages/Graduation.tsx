@@ -277,51 +277,89 @@ const Graduation = () => {
             {/* Press statement layout for structured cohorts (e.g. cohort5) */}
             {(data as any).pressStatement && (
               <>
-                <div className="space-y-5">
-                  {(data as any).pressStatement.paragraphs.map((para: string, i: number) => (
-                    <p key={i} className="text-gray-700 leading-relaxed text-sm md:text-base text-justify">{para}</p>
-                  ))}
-
-                  <blockquote className="border-l-4 pl-6 py-3 bg-orange-50 rounded-r-lg" style={{ borderColor: '#FF9148' }}>
-                    <p className="text-gray-700 leading-relaxed text-sm md:text-base italic text-justify">
-                      &ldquo;{(data as any).pressStatement.quote}&rdquo;
-                    </p>
-                  </blockquote>
-
-                  <p className="text-gray-700 leading-relaxed text-sm md:text-base text-justify">
-                    {(data as any).pressStatement.awardsIntro}
-                  </p>
-
-                  <div className="bg-gray-50 rounded-lg p-5 md:p-6">
-                    <h4 className="font-bold text-gray-800 mb-4 text-base md:text-lg">
-                      {(data as any).pressStatement.awardsTitle}
-                    </h4>
-                    <ul className="space-y-2">
-                      {(data as any).pressStatement.awards.map((award: { label: string; name: string; institution: string }, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-gray-700 text-sm md:text-base">
-                          <span className="mt-1 font-bold" style={{ color: '#FF9148' }}>•</span>
-                          <span><span className="font-semibold">{award.label}:</span> {award.name} &ndash; {award.institution}</span>
-                        </li>
-                      ))}
-                    </ul>
+                {/* Block 1: opening paragraphs + image */}
+                <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-start">
+                  <div className="w-full lg:w-1/2 space-y-4">
+                    {(data as any).pressStatement.paragraphs.slice(0, 3).map((para: string, i: number) => (
+                      <p key={i} className="text-gray-700 leading-relaxed text-sm md:text-base text-justify">{para}</p>
+                    ))}
                   </div>
-
-                  {(data as any).pressStatement.closing.map((para: string, i: number) => (
-                    <p key={i} className="text-gray-700 leading-relaxed text-sm md:text-base text-justify">{para}</p>
-                  ))}
+                  <div className="w-full lg:w-1/2">
+                    {data.images?.[0] && <img src={data.images[0]} alt="Event Image 1" className="w-full rounded-lg shadow-lg object-cover h-64 md:h-80" />}
+                  </div>
                 </div>
 
-                {data.images && data.images.length > 0 && (
+                {/* Block 2: ceremony paragraphs + image (reversed) */}
+                <div className="flex flex-col lg:flex-row-reverse gap-6 md:gap-8 items-start">
+                  <div className="w-full lg:w-1/2 space-y-4">
+                    {(data as any).pressStatement.paragraphs.slice(3).map((para: string, i: number) => (
+                      <p key={i} className="text-gray-700 leading-relaxed text-sm md:text-base text-justify">{para}</p>
+                    ))}
+                  </div>
+                  <div className="w-full lg:w-1/2">
+                    {data.images?.[1] && <img src={data.images[1]} alt="Event Image 2" className="w-full rounded-lg shadow-lg object-cover h-64 md:h-80" />}
+                  </div>
+                </div>
+
+                {/* Block 3: CEO quote + image */}
+                <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-start">
+                  <div className="w-full lg:w-1/2">
+                    <blockquote className="border-l-4 pl-6 py-3 bg-orange-50 rounded-r-lg h-full" style={{ borderColor: '#FF9148' }}>
+                      <p className="text-gray-700 leading-relaxed text-sm md:text-base italic text-justify">
+                        &ldquo;{(data as any).pressStatement.quote}&rdquo;
+                      </p>
+                    </blockquote>
+                  </div>
+                  <div className="w-full lg:w-1/2">
+                    {data.images?.[2] && <img src={data.images[2]} alt="Event Image 3" className="w-full rounded-lg shadow-lg object-cover h-64 md:h-80" />}
+                  </div>
+                </div>
+
+                {/* Block 4: awards + image (reversed) */}
+                <div className="flex flex-col lg:flex-row-reverse gap-6 md:gap-8 items-start">
+                  <div className="w-full lg:w-1/2 space-y-4">
+                    <p className="text-gray-700 leading-relaxed text-sm md:text-base text-justify">
+                      {(data as any).pressStatement.awardsIntro}
+                    </p>
+                    <div className="bg-gray-50 rounded-lg p-5 md:p-6">
+                      <h4 className="font-bold text-gray-800 mb-4 text-base md:text-lg">
+                        {(data as any).pressStatement.awardsTitle}
+                      </h4>
+                      <ul className="space-y-2">
+                        {(data as any).pressStatement.awards.map((award: { label: string; name: string; institution: string }, i: number) => (
+                          <li key={i} className="flex items-start gap-2 text-gray-700 text-sm md:text-base">
+                            <span className="mt-1 font-bold" style={{ color: '#FF9148' }}>•</span>
+                            <span><span className="font-semibold">{award.label}:</span> {award.name} &ndash; {award.institution}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="w-full lg:w-1/2">
+                    {data.images?.[3] && <img src={data.images[3]} alt="Event Image 4" className="w-full rounded-lg shadow-lg object-cover h-64 md:h-80" />}
+                  </div>
+                </div>
+
+                {/* Block 5: closing paragraphs + image */}
+                <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-start">
+                  <div className="w-full lg:w-1/2 space-y-4">
+                    {(data as any).pressStatement.closing.map((para: string, i: number) => (
+                      <p key={i} className="text-gray-700 leading-relaxed text-sm md:text-base text-justify">{para}</p>
+                    ))}
+                  </div>
+                  <div className="w-full lg:w-1/2">
+                    {data.images?.[4] && <img src={data.images[4]} alt="Event Image 5" className="w-full rounded-lg shadow-lg object-cover h-64 md:h-80" />}
+                  </div>
+                </div>
+
+                {/* Remaining images gallery */}
+                {data.images && data.images.length > 5 && (
                   <div>
-                    <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">Event Highlights</h3>
+                    <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">More Event Highlights</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-                      {data.images.map((image, index) => (
-                        <img
-                          key={index}
-                          src={image}
-                          alt={`Event Image ${index + 1}`}
-                          className="w-full rounded-lg shadow-lg object-cover h-40 md:h-64 hover:scale-105 transition-transform duration-300"
-                        />
+                      {data.images.slice(5).map((image, index) => (
+                        <img key={index} src={image} alt={`Event Image ${index + 6}`}
+                          className="w-full rounded-lg shadow-lg object-cover h-40 md:h-64 hover:scale-105 transition-transform duration-300" />
                       ))}
                     </div>
                   </div>
