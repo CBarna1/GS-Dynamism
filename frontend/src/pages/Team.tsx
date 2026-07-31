@@ -24,13 +24,13 @@ const lwanga = "/img/TEAM/Lwanga C Luchembe.png";
 
 const teamMembers = [
   {
-    name: 'Ms Twaambo Chisamba Kayombo',
+    name: 'Ms. Twaambo Chisamba Kayombo',
     role: 'CEO & Founder',
     image: twaambo,
     description: 'Through this role, she provides strategic leadership and sets the overall vision and direction of the organization, ensuring alignment of all programs, operations, and partnerships with its mission and goals. She oversees organizational growth, governance, and stakeholder engagement while driving innovation and long-term impact across all initiatives.'
   },
   {
-    name: 'Ms Tabitha Muzumara',
+    name: 'Ms. Tabitha Muzumara',
     role: 'Sales & Marketing Coordinator',
     image: tabitha,
     description: 'Through this position, she promotes the organization, attracts mentors and mentees, and develops marketing strategies to increase engagement.'
@@ -42,19 +42,19 @@ const teamMembers = [
     description: 'Through this role, he plans and coordinates mentorship programs and events, fostering meaningful interactions between mentors and mentees & other stakeholders. He also serves as Co-Administrator for the organization, supporting overall coordination and operations.'
   },
   {
-    name: 'Ms Nangoma Mwanamoonte',
+    name: 'Ms. Nangoma Mwanamoonte',
     role: 'Finance & Administration Coordinator',
     image: nangoma,
     description: 'Through this role, she oversees financial and administrative functions, ensuring effective resource management, organizational compliance, and smooth day-to-day operations that support the organization\'s activities.'
   },
   {
-    name: 'Mr Chilufya Lwanga Luchembe',
+    name: 'Mr. Chilufya Lwanga Luchembe',
     role: 'Mentorship Program Coordinator',
     image: lwanga,
     description: 'Through this role, he oversees the planning and implementation of mentorship programs, facilitating meaningful engagement between mentors and mentees while ensuring the overall success and impact of the program.'
   },
   {
-    name: 'Ms Lisa Taonga Chansa',
+    name: 'Ms. Lisa Taonga Chansa',
     role: 'Digital & Communications Coordinator',
     image: lisa,
     description: 'Through this role, she manages the organization\'s digital presence, brand, and public relations, creating engaging content, enhancing visibility, and driving audience engagement across platforms.'

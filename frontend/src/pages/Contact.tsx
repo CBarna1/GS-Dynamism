@@ -34,7 +34,13 @@ const Contact = () => {
             {/* Left: Contact Info */}
             <div className="space-y-8">
               <p className="text-lg text-gray-700 leading-relaxed">
-                Our journey has been marked by a commitment to excellence, a passion for innovation, and a deep belief in the power of collaboration. With a team that spans the globe, we bring together diverse talents and perspectives to tackle some of the most challenging problems in our industry. Please reach out to us for any enquiry, collaboration or any partnership and our team will be more than pleased to hear from you.
+                Our journey has been marked by a commitment to excellence, a passion for innovation, and a deep belief in the power of collaboration.
+              </p>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                With a team that spans the globe, we bring together diverse talents and perspectives to tackle some of the most challenging problems in our industry.
+              </p>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                Please reach out to us for any enquiry, collaboration or any partnership and our team will be more than pleased to hear from you.
               </p>
 
               <div className="grid sm:grid-cols-2 gap-8">

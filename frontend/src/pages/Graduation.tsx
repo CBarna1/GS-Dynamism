@@ -111,6 +111,33 @@ const graduations = {
       "/img/GS4/WhatsApp Image 2026-04-13 at 20.35.39 (2).jpeg",
       "/img/GS4/WhatsApp Image 2026-04-13 at 20.35.39.jpeg"
     ]
+  },
+  cohort5: {
+    title: "Cohort Five Graduation Ceremony",
+    date: "15th May, 2026",
+    content: "Guiding Stars proudly announces the successful graduation of its fifth cohort following a well-attended Virtual Graduation Ceremony held on 15th May 2026, marking the completion of yet another transformative mentorship journey under the Guiding Stars Mentorship Programme. This milestone reflects the organisation's unwavering commitment to raising a generation of purpose-driven, professionally grounded, and impact-oriented young leaders. Out of 67 enrolled mentees, an impressive 66 successfully graduated — a strong testament to the resilience, discipline, consistency, and intentional commitment demonstrated throughout the programme.",
+    content2: "The ceremony was honoured by the presence of Honourable Ngosa Chisupa as Guest of Honour, whose insightful remarks challenged graduands to embrace leadership with responsibility, integrity, and vision. The programme also featured a compelling address by mentor speaker Madam Immaculate Mwengwe, who highlighted the enduring value of mentorship, character formation, and continuous self-development in shaping meaningful careers and lives. In her remarks, Guiding Stars Founder and CEO reflected on the organisation's growing continental footprint: \"Guiding Stars was established not merely as a mentorship platform, but as a movement committed to shaping futures, unlocking potential, and preparing young people for excellence beyond the classroom. Seeing our impact extend beyond Zambia, with mentees from Namibia and the Democratic Republic of Congo, is a clear affirmation that purpose-driven leadership knows no borders.\"",
+    content3: "Outstanding mentees were recognised for exemplary performance throughout the programme — Excellence Awards, Cohort 5: Most Engaged Mentee: Thandiwe Phiri (Copperbelt University); Best Team Player: Joseph Chilupula (University of Zambia); Most Improved Mentee: Mukuka Bwalya (Copperbelt University). Beyond the virtual ceremony, celebrations continued with a Certificate Presentation Dinner in Kitwe on 15th May 2026. The graduation activities officially concluded with a Certificate Presentation Luncheon held at Asmara Hotel on 17th May 2026, graciously officiated by Madam Immaculate Mwengwe.",
+    future: "To the graduating Class of Cohort 5, this is not the end of a programme, but the beginning of a greater responsibility to lead, serve, and create meaningful impact wherever life takes you. The successful completion of Cohort 5 further reinforces Guiding Stars' mission of nurturing brilliance, igniting success, and equipping young people with the mindset, values, and practical competencies required to thrive in leadership, academia, entrepreneurship, and the corporate world. Congratulations to the Guiding Stars Cohort 5 Graduating Class.",
+    testimonials: [],
+    images: [
+      "/img/GS5/IMG_4667.JPG",
+      "/img/GS5/IMG_4668.JPG",
+      "/img/GS5/IMG_4669.JPG",
+      "/img/GS5/IMG_4670.JPG",
+      "/img/GS5/IMG_4671.JPG",
+      "/img/GS5/IMG_4672.JPG",
+      "/img/GS5/IMG_4673.JPG",
+      "/img/GS5/IMG_4674.JPG",
+      "/img/GS5/IMG_4675.JPG",
+      "/img/GS5/IMG_4676.JPG",
+      "/img/GS5/IMG_4677.JPG",
+      "/img/GS5/IMG_4678.JPG",
+      "/img/GS5/IMG_4679.JPG",
+      "/img/GS5/IMG_4680.JPG",
+      "/img/GS5/IMG_4681.JPG",
+      "/img/GS5/IMG_4682.JPG"
+    ]
   }
 };
 
@@ -212,6 +239,7 @@ const Graduation = () => {
               <option value="cohort2">Cohort Two (Feb - May 2025)</option>
               <option value="cohort3">Cohort Three (May - July 2025)</option>
               <option value="cohort4">Cohort Four (Aug - Dec 2025)</option>
+              <option value="cohort5">Cohort Five (May 2026)</option>
             </select>
           </div>
 
