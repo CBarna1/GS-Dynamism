@@ -115,10 +115,30 @@ const graduations = {
   cohort5: {
     title: "Cohort Five Graduation Ceremony",
     date: "15th May, 2026",
-    content: "Guiding Stars proudly announces the successful graduation of its fifth cohort following a well-attended Virtual Graduation Ceremony held on 15th May 2026, marking the completion of yet another transformative mentorship journey under the Guiding Stars Mentorship Programme. This milestone reflects the organisation's unwavering commitment to raising a generation of purpose-driven, professionally grounded, and impact-oriented young leaders. Out of 67 enrolled mentees, an impressive 66 successfully graduated — a strong testament to the resilience, discipline, consistency, and intentional commitment demonstrated throughout the programme.",
-    content2: "The ceremony was honoured by the presence of Honourable Ngosa Chisupa as Guest of Honour, whose insightful remarks challenged graduands to embrace leadership with responsibility, integrity, and vision. The programme also featured a compelling address by mentor speaker Madam Immaculate Mwengwe, who highlighted the enduring value of mentorship, character formation, and continuous self-development in shaping meaningful careers and lives. In her remarks, Guiding Stars Founder and CEO reflected on the organisation's growing continental footprint: \"Guiding Stars was established not merely as a mentorship platform, but as a movement committed to shaping futures, unlocking potential, and preparing young people for excellence beyond the classroom. Seeing our impact extend beyond Zambia, with mentees from Namibia and the Democratic Republic of Congo, is a clear affirmation that purpose-driven leadership knows no borders.\"",
-    content3: "Outstanding mentees were recognised for exemplary performance throughout the programme — Excellence Awards, Cohort 5: Most Engaged Mentee: Thandiwe Phiri (Copperbelt University); Best Team Player: Joseph Chilupula (University of Zambia); Most Improved Mentee: Mukuka Bwalya (Copperbelt University). Beyond the virtual ceremony, celebrations continued with a Certificate Presentation Dinner in Kitwe on 15th May 2026. The graduation activities officially concluded with a Certificate Presentation Luncheon held at Asmara Hotel on 17th May 2026, graciously officiated by Madam Immaculate Mwengwe.",
-    future: "To the graduating Class of Cohort 5, this is not the end of a programme, but the beginning of a greater responsibility to lead, serve, and create meaningful impact wherever life takes you. The successful completion of Cohort 5 further reinforces Guiding Stars' mission of nurturing brilliance, igniting success, and equipping young people with the mindset, values, and practical competencies required to thrive in leadership, academia, entrepreneurship, and the corporate world. Congratulations to the Guiding Stars Cohort 5 Graduating Class.",
+    pressStatement: {
+      paragraphs: [
+        "Guiding Stars proudly announces the successful graduation of its fifth cohort following a well-attended Virtual Graduation Ceremony held on 15th May 2026, marking the completion of yet another transformative mentorship journey under the Guiding Stars Mentorship Programme.",
+        "This milestone reflects the organisation's unwavering commitment to raising a generation of purpose-driven, professionally grounded, and impact-oriented young leaders.",
+        "Out of 67 enrolled mentees, an impressive 66 successfully graduated, a strong testament to the resilience, discipline, consistency, and intentional commitment demonstrated throughout the programme.",
+        "The ceremony was honoured by the presence of Honourable Ngosa Chisupa as Guest of Honour, whose insightful remarks challenged graduands to embrace leadership with responsibility, integrity, and vision.",
+        "The programme also featured a compelling address by mentor speaker Madam Immaculate Mwengwe, who highlighted the enduring value of mentorship, character formation, and continuous self-development in shaping meaningful careers and lives.",
+        "In her remarks, Guiding Stars Founder and Chief Executive Officer reflected on the organisation's growing continental footprint and sustained impact in youth development.",
+      ],
+      quote: "Guiding Stars was established not merely as a mentorship platform, but as a movement committed to shaping futures, unlocking potential, and preparing young people for excellence beyond the classroom. Seeing our impact extend beyond Zambia, with mentees from Namibia and the Democratic Republic of Congo, is a clear affirmation that purpose-driven leadership knows no borders.",
+      awardsIntro: "As part of the graduation ceremony, outstanding mentees were recognised for exemplary performance and exceptional contribution throughout the programme:",
+      awardsTitle: "Excellence Awards \u2013 Cohort 5",
+      awards: [
+        { label: "Most Engaged Mentee", name: "Thandiwe Phiri", institution: "Copperbelt University" },
+        { label: "Best Team Player", name: "Joseph Chilupula", institution: "University of Zambia" },
+        { label: "Most Improved Mentee", name: "Mukuka Bwalya", institution: "Copperbelt University" },
+      ],
+      closing: [
+        "Beyond the virtual ceremony, the celebrations continued with a Certificate Presentation Dinner in Kitwe on 15th May 2026, providing an opportunity for in-person recognition and fellowship.",
+        "The graduation activities officially concluded with a Certificate Presentation Luncheon held at Asmara Hotel on 17th May 2026, graciously officiated by Madam Immaculate Mwengwe.",
+        "The successful completion of Cohort 5 further reinforces Guiding Stars\u2019 mission of nurturing brilliance, igniting success, and equipping young people with the mindset, values, and practical competencies required to thrive in leadership, academia, entrepreneurship, and the corporate world.",
+      ],
+    },
+    future: "To the graduating Class of Cohort 5, this is not the end of a programme, but the beginning of a greater responsibility to lead, serve, and create meaningful impact wherever life takes you. Congratulations to the Guiding Stars Cohort 5 Graduating Class.",
     testimonials: [],
     images: [
       "/img/GS5/IMG_4667.JPG",
@@ -316,7 +336,7 @@ const Graduation = () => {
             <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-center">
               <div className="w-full lg:w-1/2">
                 <p className="text-gray-700 leading-relaxed text-sm md:text-base">
-                  {data.content}
+                  {(data as any).content}
                 </p>
               </div>
               <div className="w-full lg:w-1/2">
@@ -334,7 +354,7 @@ const Graduation = () => {
             <div className="flex flex-col lg:flex-row-reverse gap-6 md:gap-8 items-center">
               <div className="w-full lg:w-1/2">
                 <p className="text-gray-700 leading-relaxed text-sm md:text-base">
-                  {data.content2}
+                  {(data as any).content2}
                 </p>
               </div>
               <div className="w-full lg:w-1/2">
@@ -352,7 +372,7 @@ const Graduation = () => {
             <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-center">
               <div className="w-full lg:w-1/2">
                 <p className="text-gray-700 leading-relaxed text-sm md:text-base">
-                  {data.content3}
+                  {(data as any).content3}
                 </p>
               </div>
               <div className="w-full lg:w-1/2">
