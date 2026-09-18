@@ -42,6 +42,7 @@ function ContentManagement() {
     { key: 'about',   label: 'About' },
     { key: 'team',    label: 'Team' },
     { key: 'apply',   label: 'Apply' },
+    { key: 'mentor-apply', label: 'Mentor Apply' },
     { key: 'contact', label: 'Contact' },
     { key: 'global',  label: 'Global / Footer' },
   ];
@@ -163,7 +164,7 @@ function ContentManagement() {
       setSuccess('Content deleted successfully!');
       fetchContents();
       setTimeout(() => setSuccess(''), 3000);
-    } catch (err: any) {
+    } catch {
       setError('Failed to delete content');
     }
   };
@@ -188,7 +189,7 @@ function ContentManagement() {
 
   return (
     <div className="min-h-screen bg-cover bg-center" style={{
-      backgroundImage: 'url("/img/corporate\ image\ 3.jpeg")',
+      backgroundImage: 'url("/img/corporate image 3.jpeg")',
       backgroundColor: 'rgba(0, 0, 0, 0.3)'
     }}>
       <div className="max-w-7xl mx-auto p-4 md:p-6">

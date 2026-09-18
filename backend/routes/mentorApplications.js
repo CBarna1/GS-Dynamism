@@ -1,9 +1,10 @@
 // backend/routes/mentorApplications.js
 const express = require('express');
 const crypto = require('crypto');
-const { MentorApplication } = require('../models');
+const { MentorApplication, Content } = require('../models');
 const { authMiddleware, adminOnly } = require('../middleware/auth');
 const { sendEmail } = require('../services/emailService');
+const { verifyCaptcha } = require('../utils/captcha');
 
 const router = express.Router();
 
@@ -25,6 +26,8 @@ router.post('/', async (req, res) => {
       bio,
       availability,
       preferences,
+      captcha_token,
+      captcha_answer,
     } = req.body;
 
     // Validate required fields
@@ -42,6 +45,19 @@ router.post('/', async (req, res) => {
         success: false,
         message: 'All required fields must be filled',
       });
+    }
+
+    if (!verifyCaptcha(captcha_token, captcha_answer)) {
+      return res.status(400).json({ success: false, message: 'Incorrect or expired captcha answer. Please try again.' });
+    }
+
+    // Reject if the admin has set a future application-open date
+    const openDateField = await Content.findOne({ where: { key: 'mentor_apply_open_date' } });
+    if (openDateField && openDateField.value) {
+      const openDate = new Date(openDateField.value);
+      if (!isNaN(openDate.getTime()) && new Date() < openDate) {
+        return res.status(403).json({ success: false, message: 'Mentor applications are not open yet.' });
+      }
     }
 
     // Check if email already has a pending or approved application

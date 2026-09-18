@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Footer from '../components/Footer';
+import ApplicationCountdown from '../components/ApplicationCountdown';
+import MathCaptcha, { type MathCaptchaHandle } from '../components/MathCaptcha';
 import api from '../services/api';
 
 const MentorApply = () => {
@@ -20,6 +22,28 @@ const MentorApply = () => {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
+  const [checkingWindow, setCheckingWindow] = useState(true);
+  const [openDate, setOpenDate] = useState<Date | null>(null);
+
+  const [captchaAnswer, setCaptchaAnswer] = useState('');
+  const [captchaToken, setCaptchaToken] = useState('');
+  const captchaRef = useRef<MathCaptchaHandle>(null);
+
+  useEffect(() => {
+    api.get('/content')
+      .then(res => {
+        const value = res.data?.data?.mentor_apply_open_date;
+        if (value) {
+          const date = new Date(value);
+          if (!isNaN(date.getTime()) && date.getTime() > Date.now()) {
+            setOpenDate(date);
+          }
+        }
+      })
+      .catch(err => console.error('Failed to load content:', err))
+      .finally(() => setCheckingWindow(false));
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -31,7 +55,11 @@ const MentorApply = () => {
     setResponse(null);
 
     try {
-      const result = await api.post('/mentor-applications', formData);
+      const result = await api.post('/mentor-applications', {
+        ...formData,
+        captcha_token: captchaToken,
+        captcha_answer: captchaAnswer,
+      });
 
       if (result.data.success) {
         setResponse({
@@ -58,16 +86,26 @@ const MentorApply = () => {
           type: 'error',
           message: result.data.message || 'Failed to submit application. Please try again.',
         });
+        captchaRef.current?.refresh();
       }
     } catch (error: any) {
       setResponse({
         type: 'error',
         message: error.response?.data?.message || 'Failed to submit application. Please try again.',
       });
+      captchaRef.current?.refresh();
     } finally {
       setLoading(false);
     }
   };
+
+  if (checkingWindow) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="w-10 h-10 border-4 border-gray-200 border-t-[#FF9148] rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white min-h-screen">
@@ -129,6 +167,9 @@ const MentorApply = () => {
             </div>
 
             {/* Form Section */}
+            {openDate ? (
+              <ApplicationCountdown targetDate={openDate} onComplete={() => setOpenDate(null)} />
+            ) : (
             <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
               <h2 className="text-3xl font-bold text-gray-900 mb-8">Application Form</h2>
 
@@ -330,6 +371,17 @@ const MentorApply = () => {
                   />
                 </div>
 
+                {/* Captcha */}
+                <div className="mb-8">
+                  <MathCaptcha
+                    ref={captchaRef}
+                    answer={captchaAnswer}
+                    onAnswerChange={setCaptchaAnswer}
+                    onTokenChange={setCaptchaToken}
+                    inputClassName="w-full max-w-[7rem] p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF9148] focus:border-[#FF9148] outline-none transition disabled:bg-gray-100"
+                  />
+                </div>
+
                 {/* Submit Button */}
                 <button
                   type="submit"
@@ -344,6 +396,7 @@ const MentorApply = () => {
                 </p>
               </form>
             </div>
+            )}
           </div>
         </div>
       </section>
