@@ -1,5 +1,5 @@
 // src/pages/BlogManagement.tsx
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import api from '../services/api';
@@ -42,6 +42,9 @@ function BlogManagement() {
   const [slugTouched, setSlugTouched] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingContentImage, setUploadingContentImage] = useState(false);
+  const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const contentImageInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { fetchPosts(); }, []);
 
@@ -112,6 +115,45 @@ function BlogManagement() {
       setError(err.response?.data?.message || 'Failed to upload image');
     } finally {
       setUploadingImage(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleRemoveCoverImage = () => {
+    setFormData((prev) => ({ ...prev, cover_image: '' }));
+  };
+
+  const handleInsertContentImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploadingContentImage(true);
+      const form = new FormData();
+      form.append('file', file);
+      const res = await api.post('/blog/upload', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const marker = `\n\n![Image](${res.data.imageUrl})\n\n`;
+      const textarea = contentTextareaRef.current;
+      const cursor = textarea?.selectionStart ?? formData.content.length;
+
+      setFormData((prev) => ({
+        ...prev,
+        content: prev.content.slice(0, cursor) + marker + prev.content.slice(cursor),
+      }));
+
+      // Restore focus + move the cursor to just after the inserted marker
+      requestAnimationFrame(() => {
+        if (!textarea) return;
+        const pos = cursor + marker.length;
+        textarea.focus();
+        textarea.setSelectionRange(pos, pos);
+      });
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to upload image');
+    } finally {
+      setUploadingContentImage(false);
+      e.target.value = '';
     }
   };
 
@@ -329,8 +371,27 @@ function BlogManagement() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Content *</label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-sm font-medium text-gray-700">Content *</label>
+                        <button
+                          type="button"
+                          onClick={() => contentImageInputRef.current?.click()}
+                          disabled={uploadingContentImage}
+                          className="text-xs font-semibold px-2 py-1 rounded border transition disabled:opacity-50"
+                          style={{ borderColor: '#FF9148', color: '#FF9148' }}
+                        >
+                          {uploadingContentImage ? 'Uploading…' : '+ Insert Image'}
+                        </button>
+                        <input
+                          ref={contentImageInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleInsertContentImage}
+                          className="hidden"
+                        />
+                      </div>
                       <textarea
+                        ref={contentTextareaRef}
                         value={formData.content}
                         onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                         rows={10}
@@ -338,6 +399,9 @@ function BlogManagement() {
                         placeholder="Write the full post here..."
                         required
                       />
+                      <p className="text-xs text-gray-400 mt-1">
+                        Use "+ Insert Image" to drop a picture into the post at your cursor position.
+                      </p>
                     </div>
 
                     <div>
@@ -351,7 +415,16 @@ function BlogManagement() {
                       />
                       {uploadingImage && <p className="text-sm text-blue-600 mt-2">Uploading...</p>}
                       {formData.cover_image && (
-                        <img src={formData.cover_image} alt="Cover preview" className="mt-3 max-h-40 rounded-lg" />
+                        <div className="mt-3 flex items-start gap-3">
+                          <img src={formData.cover_image} alt="Cover preview" className="max-h-40 rounded-lg" />
+                          <button
+                            type="button"
+                            onClick={handleRemoveCoverImage}
+                            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-300 text-red-600 hover:bg-red-50 transition"
+                          >
+                            Remove
+                          </button>
+                        </div>
                       )}
                     </div>
 

@@ -1,6 +1,6 @@
 // src/App.tsx
 import { type JSX, useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
 
 // Pages & Components
@@ -143,31 +143,37 @@ function RootRedirect() {
 
 // --- MAIN APP ---
 
-function App() {
-  const location = window.location.pathname;
-  
+/**
+ * AppRoutes: must live inside <Router> so useLocation() re-renders this
+ * on every navigation (a plain window.location.pathname read in App()
+ * would only reflect whatever URL was current the last time App itself
+ * re-rendered, which is driven by AuthContext, not by route changes).
+ */
+function AppRoutes() {
+  const { pathname } = useLocation();
+
   // Don't show navbar in admin routes (they have their own layout), portal routes (dashboards, messages, settings), or on login pages
-  const isAdminRoute = location.startsWith('/dashboard') || 
-                       location.startsWith('/mentees') || 
-                       location.startsWith('/mentors') || 
-                       location.startsWith('/matches') || 
-                       location.startsWith('/progress') || 
-                       location.startsWith('/content') ||
-                       location.startsWith('/submissions') ||
-                       location.startsWith('/mentor-applications') ||
-                       location.startsWith('/blog-management');
-  const isPortalRoute = location.startsWith('/mentee/dashboard') || 
-                        location.startsWith('/mentee/messages') ||
-                        location.startsWith('/mentor/portal') ||
-                        location.startsWith('/mentor/messages') ||
-                        location.startsWith('/mentor/edit-profile') ||
-                        location.startsWith('/mentor/change-password');
-  const isLoginPage = location === '/login' || location === '/mentee/login' || location.startsWith('/mentor/login');
-  const isActivationPage = location.startsWith('/activate') || location === '/verify-email' || location.startsWith('/mentee/set-password');
-  const showNavbar = !isAdminRoute && !isPortalRoute && !isLoginPage && !isActivationPage && location !== '/messages';
+  const isAdminRoute = pathname.startsWith('/dashboard') ||
+                       pathname.startsWith('/mentees') ||
+                       pathname.startsWith('/mentors') ||
+                       pathname.startsWith('/matches') ||
+                       pathname.startsWith('/progress') ||
+                       pathname.startsWith('/content') ||
+                       pathname.startsWith('/submissions') ||
+                       pathname.startsWith('/mentor-applications') ||
+                       pathname.startsWith('/blog-management');
+  const isPortalRoute = pathname.startsWith('/mentee/dashboard') ||
+                        pathname.startsWith('/mentee/messages') ||
+                        pathname.startsWith('/mentor/portal') ||
+                        pathname.startsWith('/mentor/messages') ||
+                        pathname.startsWith('/mentor/edit-profile') ||
+                        pathname.startsWith('/mentor/change-password');
+  const isLoginPage = pathname === '/login' || pathname === '/mentee/login' || pathname.startsWith('/mentor/login');
+  const isActivationPage = pathname.startsWith('/activate') || pathname === '/verify-email' || pathname.startsWith('/mentee/set-password');
+  const showNavbar = !isAdminRoute && !isPortalRoute && !isLoginPage && !isActivationPage && pathname !== '/messages';
 
   return (
-    <Router>
+    <>
       <ScrollToTop />
       {showNavbar && <Navbar />}
       <Routes>
@@ -279,6 +285,14 @@ function App() {
         <Route path="/" element={<RootRedirect />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppRoutes />
     </Router>
   );
 }
