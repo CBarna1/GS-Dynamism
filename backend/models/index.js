@@ -10,6 +10,10 @@ const Contact = require('./Contact');
 const MentorApplication = require('./MentorApplication');
 const Message = require('./Message');
 const BlogPost = require('./BlogPost');
+const TeamMember = require('./TeamMember');
+const Testimonial = require('./Testimonial');
+const GraduationCohort = require('./GraduationCohort');
+const GraduationPhoto = require('./GraduationPhoto');
 
 const models = {
   User,
@@ -21,7 +25,11 @@ const models = {
   Contact,
   MentorApplication,
   Message,
-  BlogPost
+  BlogPost,
+  TeamMember,
+  Testimonial,
+  GraduationCohort,
+  GraduationPhoto
 };
 
 // This loop is the magic part—it "plugs in" the associations

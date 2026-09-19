@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import ScrollProgress from '../components/ScrollProgress';
 import { SEOHelmet } from '../hooks/useSEO';
 import api from '../services/api';
+import { renderRichText } from '../utils/richText';
 
 interface BlogPostFull {
   id: number;
@@ -14,36 +15,6 @@ interface BlogPostFull {
   cover_image: string | null;
   author: string | null;
   published_at: string;
-}
-
-/**
- * Renders post content as paragraphs, splitting out any embedded
- * ![alt](url) markers (inserted via the admin's "Insert Image" button)
- * into actual <img> elements rather than showing them as raw text.
- */
-function renderPostContent(content: string) {
-  const parts = content.split(/(!\[[^\]]*\]\([^)]+\))/g);
-  return parts.map((part, i) => {
-    const match = part.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
-    if (match) {
-      const [, alt, src] = match;
-      return (
-        <img
-          key={i}
-          src={src}
-          alt={alt || 'Blog post image'}
-          className="w-full rounded-lg my-8 shadow-md"
-          loading="lazy"
-        />
-      );
-    }
-    if (!part.trim()) return null;
-    return (
-      <p key={i} className="whitespace-pre-wrap mb-4 last:mb-0">
-        {part.trim()}
-      </p>
-    );
-  });
 }
 
 const BlogPost = () => {
@@ -120,7 +91,7 @@ const BlogPost = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">{post.title}</h1>
 
           <div className="text-gray-700 text-lg leading-relaxed">
-            {renderPostContent(post.content)}
+            {renderRichText(post.content)}
           </div>
         </div>
       </article>

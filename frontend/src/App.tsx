@@ -14,6 +14,9 @@ import About from './pages/About';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import BlogManagement from './pages/BlogManagement';
+import TeamManagement from './pages/TeamManagement';
+import TestimonialManagement from './pages/TestimonialManagement';
+import GraduationManagement from './pages/GraduationManagement';
 import ApplyPage from './pages/ApplyPage';
 import Contact from './pages/Contact';
 import Graduation from './pages/Graduation';
@@ -161,7 +164,10 @@ function AppRoutes() {
                        pathname.startsWith('/content') ||
                        pathname.startsWith('/submissions') ||
                        pathname.startsWith('/mentor-applications') ||
-                       pathname.startsWith('/blog-management');
+                       pathname.startsWith('/blog-management') ||
+                       pathname.startsWith('/team-management') ||
+                       pathname.startsWith('/testimonial-management') ||
+                       pathname.startsWith('/graduation-management');
   const isPortalRoute = pathname.startsWith('/mentee/dashboard') ||
                         pathname.startsWith('/mentee/messages') ||
                         pathname.startsWith('/mentor/portal') ||
@@ -244,6 +250,21 @@ function AppRoutes() {
         <Route path="/blog-management" element={
           <ProtectedRoute requiredRole="admin">
             <AdminLayout><BlogManagement /></AdminLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/team-management" element={
+          <ProtectedRoute requiredRole="admin">
+            <AdminLayout><TeamManagement /></AdminLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/testimonial-management" element={
+          <ProtectedRoute requiredRole="admin">
+            <AdminLayout><TestimonialManagement /></AdminLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/graduation-management" element={
+          <ProtectedRoute requiredRole="admin">
+            <AdminLayout><GraduationManagement /></AdminLayout>
           </ProtectedRoute>
         } />
 

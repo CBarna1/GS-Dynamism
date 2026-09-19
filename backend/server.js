@@ -50,6 +50,9 @@ app.use('/api/mentor-portal', require('./routes/mentorPortal'));
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/captcha', require('./routes/captcha'));
 app.use('/api/blog', require('./routes/blog'));
+app.use('/api/team', require('./routes/team'));
+app.use('/api/testimonials', require('./routes/testimonials'));
+app.use('/api/graduation', require('./routes/graduation'));
 
 // SPA Fallback using middleware (works with Express 5)
 // Exclude special routes that should return specific content

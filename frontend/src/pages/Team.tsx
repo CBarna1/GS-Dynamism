@@ -8,90 +8,47 @@ import Tag from '../components/Tag';
 import { SEOHelmet } from '../hooks/useSEO';
 import api from '../services/api';
 
-// Team member images (use root-relative public paths)
-const twaambo = "/img/TEAM/Twaambo Chisamba Kayombo.png";
-const lisa = "/img/TEAM/Lisa T Chansa.png";
-const nangoma = "/img/TEAM/Nangoma Mwanamoonte.png";
-const tabitha = "/img/TEAM/Tabitha Muzumara.png";
-const edward = "/img/TEAM/Edward Kafusa.png";
-const lwanga = "/img/TEAM/Lwanga C Luchembe.png";
-
-const teamMembers = [
-  {
-    name: 'Ms. Twaambo Chisamba Kayombo',
-    role: 'CEO & Founder',
-    image: twaambo,
-    description: 'Through this role, she provides strategic leadership and sets the overall vision and direction of the organization, ensuring alignment of all programs, operations, and partnerships with its mission and goals. She oversees organizational growth, governance, and stakeholder engagement while driving innovation and long-term impact across all initiatives.'
-  },
-  {
-    name: 'Ms. Tabitha Muzumara',
-    role: 'Sales & Marketing Coordinator',
-    image: tabitha,
-    description: 'Through this position, she promotes the organization, attracts mentors and mentees, and develops marketing strategies to increase engagement.'
-  },
-  {
-    name: 'Mr. Edward Kafusa',
-    role: 'Events & Program Coordinator',
-    image: edward,
-    description: 'Through this role, he plans and coordinates mentorship programs and events, fostering meaningful interactions between mentors and mentees & other stakeholders. He also serves as Co-Administrator for the organization, supporting overall coordination and operations.'
-  },
-  {
-    name: 'Ms. Nangoma Mwanamoonte',
-    role: 'Finance & Administration Coordinator',
-    image: nangoma,
-    description: 'Through this role, she oversees financial and administrative functions, ensuring effective resource management, organizational compliance, and smooth day-to-day operations that support the organization\'s activities.'
-  },
-  {
-    name: 'Mr. Chilufya Lwanga Luchembe',
-    role: 'Mentorship Program Coordinator',
-    image: lwanga,
-    description: 'Through this role, he oversees the planning and implementation of mentorship programs, facilitating meaningful engagement between mentors and mentees while ensuring the overall success and impact of the program.'
-  },
-  {
-    name: 'Ms. Lisa Taonga Chansa',
-    role: 'Digital & Communications Coordinator',
-    image: lisa,
-    description: 'Through this role, she manages the organization\'s digital presence, brand, and public relations, creating engaging content, enhancing visibility, and driving audience engagement across platforms.'
-  },
-];
+interface TeamMemberApi {
+  id: number;
+  name: string;
+  role: string;
+  photo: string | null;
+  description: string | null;
+}
 
 const Team = () => {
-  const [flipped, setFlipped] = useState<string | null>(null);
+  const [flipped, setFlipped] = useState<number | null>(null);
   const [content, setContent] = useState<Record<string, string>>({});
+  const [members, setMembers] = useState<TeamMemberApi[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
     api.get('/content')
       .then(res => setContent(res.data?.data || {}))
       .catch(err => console.error('Failed to load content:', err));
+    api.get('/team')
+      .then(res => setMembers(res.data?.data || []))
+      .catch(err => console.error('Failed to load team:', err))
+      .finally(() => setLoading(false));
   }, []);
-
-  // Build team members with CMS descriptions at render time
-  const teamWithContent = useMemo(() => [
-    { ...teamMembers[0], description: content.team_twaambo_desc || teamMembers[0].description },
-    { ...teamMembers[1], description: content.team_tabitha_desc || teamMembers[1].description },
-    { ...teamMembers[2], description: content.team_edward_desc  || teamMembers[2].description },
-    { ...teamMembers[3], description: content.team_nangoma_desc || teamMembers[3].description },
-    { ...teamMembers[4], description: content.team_chilufya_desc|| teamMembers[4].description },
-    { ...teamMembers[5], description: content.team_lisa_desc    || teamMembers[5].description },
-  ], [content]);
 
   const filteredTeam = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return teamWithContent;
-    return teamWithContent.filter(
+    if (!q) return members;
+    return members.filter(
       (m) => m.name.toLowerCase().includes(q) || m.role.toLowerCase().includes(q)
     );
-  }, [search, teamWithContent]);
+  }, [search, members]);
 
-  const toggleFlip = (name: string) => {
-    setFlipped(flipped === name ? null : name);
+  const toggleFlip = (id: number) => {
+    setFlipped(flipped === id ? null : id);
   };
 
-  const onCardKeyDown = (e: React.KeyboardEvent, name: string) => {
+  const onCardKeyDown = (e: React.KeyboardEvent, id: number) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      toggleFlip(name);
+      toggleFlip(id);
     }
   };
 
@@ -129,26 +86,34 @@ const Team = () => {
             </div>
           </div>
 
-          {filteredTeam.length === 0 ? (
-            <p className="text-center text-gray-500">No team members match "{search}".</p>
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-96 rounded-xl skeleton-shimmer" />
+              ))}
+            </div>
+          ) : filteredTeam.length === 0 ? (
+            <p className="text-center text-gray-500">
+              {members.length === 0 ? 'Team information is coming soon.' : `No team members match "${search}".`}
+            </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredTeam.map((member, index) => (
-                <Reveal key={member.name} delay={index * 80} className="h-96">
+                <Reveal key={member.id} delay={index * 80} className="h-96">
                   <div
                     className="group h-96 cursor-pointer perspective hover:-translate-y-1 transition-transform duration-300"
-                    onClick={() => toggleFlip(member.name)}
-                    onKeyDown={(e) => onCardKeyDown(e, member.name)}
+                    onClick={() => toggleFlip(member.id)}
+                    onKeyDown={(e) => onCardKeyDown(e, member.id)}
                     tabIndex={0}
                     role="button"
-                    aria-pressed={flipped === member.name}
-                    aria-label={`${member.name}, ${member.role}. Press to ${flipped === member.name ? 'hide' : 'show'} details.`}
+                    aria-pressed={flipped === member.id}
+                    aria-label={`${member.name}, ${member.role}. Press to ${flipped === member.id ? 'hide' : 'show'} details.`}
                   >
                   <div
                     className="relative w-full h-full transition-transform duration-500 transform"
                     style={{
                       transformStyle: 'preserve-3d',
-                      transform: flipped === member.name ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                      transform: flipped === member.id ? 'rotateY(180deg)' : 'rotateY(0deg)',
                     }}
                   >
                     {/* Front of card - Image & Name */}
@@ -157,12 +122,21 @@ const Team = () => {
                       style={{ backfaceVisibility: 'hidden' }}
                     >
                       <div className="p-6 h-full flex flex-col items-center justify-center text-center bg-gradient-to-br from-orange-50 to-gray-50">
-                        <img
-                          src={member.image}
-                          alt={member.name}
-                          className="w-40 h-48 object-cover rounded-lg mx-auto mb-4 border-4 shadow-md"
-                          style={{ borderColor: '#FF9148' }}
-                        />
+                        {member.photo ? (
+                          <img
+                            src={member.photo}
+                            alt={member.name}
+                            className="w-40 h-48 object-cover rounded-lg mx-auto mb-4 border-4 shadow-md"
+                            style={{ borderColor: '#FF9148' }}
+                          />
+                        ) : (
+                          <div
+                            className="w-40 h-48 rounded-lg mx-auto mb-4 border-4 shadow-md flex items-center justify-center text-5xl bg-gray-100"
+                            style={{ borderColor: '#FF9148' }}
+                          >
+                            👤
+                          </div>
+                        )}
                         <h4 className="text-lg font-bold text-gray-800">{member.name}</h4>
                         <Tag className="mt-2" variant="outline">{member.role}</Tag>
                         <p className="text-xs text-gray-500 mt-3">Click to learn more</p>
