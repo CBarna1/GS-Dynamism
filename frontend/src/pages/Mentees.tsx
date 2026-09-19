@@ -134,6 +134,21 @@ const Mentees = () => {
     }
   };
 
+  const handleDelete = async (mentee: Mentee) => {
+    if (!token) return;
+    if (!window.confirm(`Delete ${mentee.first_name} ${mentee.last_name}? This cannot be undone.`)) return;
+    try {
+      await api.delete(`/mentees/${mentee.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setSuccess('Mentee deleted successfully!');
+      fetchData();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err: any) {
+      setError('Failed to delete: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
   const statusBadgeStyle = (status: string) => {
     switch (status) {
       case 'active':   return { background: 'rgba(255,145,72,0.15)', color: '#E8722E' };
@@ -327,8 +342,8 @@ const Mentees = () => {
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Name</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Email</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Status</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/5">Goals</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Actions</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">Goals</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -352,19 +367,27 @@ const Mentees = () => {
                             {mentee.goals?.substring(0, 60) || 'N/A'}
                           </td>
                           <td className="px-4 py-4 text-sm font-medium">
-                            <button
-                              onClick={() => openModal(mentee)}
-                              className="font-semibold transition whitespace-nowrap"
-                              style={{ color: '#FF9148' }}
-                              onMouseEnter={e =>
-                                (e.currentTarget.style.color = '#E8722E')
-                              }
-                              onMouseLeave={e =>
-                                (e.currentTarget.style.color = '#FF9148')
-                              }
-                            >
-                              View / Update
-                            </button>
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => openModal(mentee)}
+                                className="font-semibold transition whitespace-nowrap"
+                                style={{ color: '#FF9148' }}
+                                onMouseEnter={e =>
+                                  (e.currentTarget.style.color = '#E8722E')
+                                }
+                                onMouseLeave={e =>
+                                  (e.currentTarget.style.color = '#FF9148')
+                                }
+                              >
+                                View / Update
+                              </button>
+                              <button
+                                onClick={() => handleDelete(mentee)}
+                                className="font-semibold text-red-500 hover:text-red-700 transition whitespace-nowrap"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -399,13 +422,21 @@ const Mentees = () => {
                         {mentee.goals || 'N/A'}
                       </p>
                     </div>
-                    <button
-                      onClick={() => openModal(mentee)}
-                      className="w-full py-2 rounded-lg text-sm font-semibold text-white transition"
-                      style={{ background: 'linear-gradient(135deg, #FF9148, #E8722E)' }}
-                    >
-                      View / Update
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => openModal(mentee)}
+                        className="flex-1 py-2 rounded-lg text-sm font-semibold text-white transition"
+                        style={{ background: 'linear-gradient(135deg, #FF9148, #E8722E)' }}
+                      >
+                        View / Update
+                      </button>
+                      <button
+                        onClick={() => handleDelete(mentee)}
+                        className="px-4 py-2 rounded-lg text-sm font-semibold text-red-600 border border-red-200 hover:bg-red-50 transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

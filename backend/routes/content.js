@@ -1,41 +1,11 @@
 // backend/routes/content.js
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const { authMiddleware, adminOnly } = require('../middleware/auth');
 const { Content } = require('../models/index');
+const { makeUpload, saveOptimizedFile } = require('../utils/upload');
 
 const router = express.Router();
-
-// Configure multer for image uploads
-const uploadsDir = path.join(__dirname, '../public/uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({
-  storage: storage,
-  fileFilter: (req, file, cb) => {
-    const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    if (allowedMimes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only image files are allowed'));
-    }
-  },
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
-});
+const upload = makeUpload('content');
 
 /**
  * GET /api/content - Get all content items (public - for frontend to fetch)
@@ -89,12 +59,11 @@ router.post('/upload', authMiddleware, adminOnly, upload.single('file'), async (
     const { key, title, section, page, description } = req.body;
 
     if (!key || !title) {
-      // Delete uploaded file if validation fails
-      fs.unlinkSync(req.file.path);
       return res.status(400).json({ success: false, message: 'Key and title are required' });
     }
 
-    const imageUrl = `/uploads/${req.file.filename}`;
+    const filename = await saveOptimizedFile(req.file, 'content');
+    const imageUrl = `/uploads/${filename}`;
 
     const content = await Content.create({
       key,
@@ -106,16 +75,12 @@ router.post('/upload', authMiddleware, adminOnly, upload.single('file'), async (
       description
     });
 
-    res.status(201).json({ 
-      success: true, 
+    res.status(201).json({
+      success: true,
       data: content,
       imageUrl: imageUrl
     });
   } catch (err) {
-    // Delete uploaded file on error
-    if (req.file) {
-      fs.unlinkSync(req.file.path);
-    }
     res.status(400).json({ success: false, message: err.message });
   }
 });

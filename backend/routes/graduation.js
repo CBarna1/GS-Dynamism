@@ -2,7 +2,7 @@
 const express = require('express');
 const { authMiddleware, adminOnly } = require('../middleware/auth');
 const { GraduationCohort, GraduationPhoto } = require('../models/index');
-const { makeUpload } = require('../utils/upload');
+const { makeUpload, saveOptimizedFile } = require('../utils/upload');
 
 const router = express.Router();
 const upload = makeUpload('graduation');
@@ -131,13 +131,15 @@ router.post('/:id/photos', authMiddleware, adminOnly, upload.array('files', 100)
     let nextOrder = (maxOrder || 0) + 1;
 
     const created = await Promise.all(
-      req.files.map((file) =>
-        GraduationPhoto.create({
+      req.files.map(async (file) => {
+        const order = nextOrder++; // capture synchronously so order survives async compression below
+        const filename = await saveOptimizedFile(file, 'graduation');
+        return GraduationPhoto.create({
           cohort_id: cohort.id,
-          image_url: `/uploads/${file.filename}`,
-          display_order: nextOrder++,
-        })
-      )
+          image_url: `/uploads/${filename}`,
+          display_order: order,
+        });
+      })
     );
 
     res.status(201).json({ success: true, data: created });

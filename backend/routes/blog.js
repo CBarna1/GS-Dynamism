@@ -1,35 +1,11 @@
 // backend/routes/blog.js
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const { authMiddleware, adminOnly } = require('../middleware/auth');
 const { BlogPost } = require('../models/index');
+const { makeUpload, saveOptimizedFile } = require('../utils/upload');
 
 const router = express.Router();
-
-// ── Cover image upload (admin only) ──────────────────────────────────────
-const uploadsDir = path.join(__dirname, '../public/uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, 'blog-' + uniqueSuffix + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({
-  storage,
-  fileFilter: (req, file, cb) => {
-    const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    cb(allowedMimes.includes(file.mimetype) ? null : new Error('Only image files are allowed'), true);
-  },
-  limits: { fileSize: 5 * 1024 * 1024 },
-});
+const upload = makeUpload('blog');
 
 function slugify(text) {
   return text
@@ -44,11 +20,16 @@ function slugify(text) {
  * POST /api/blog/upload - Upload a cover image (admin only)
  * MUST be before /:slug to avoid being swallowed by it
  */
-router.post('/upload', authMiddleware, adminOnly, upload.single('file'), (req, res) => {
+router.post('/upload', authMiddleware, adminOnly, upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: 'No file uploaded' });
   }
-  res.status(201).json({ success: true, imageUrl: `/uploads/${req.file.filename}` });
+  try {
+    const filename = await saveOptimizedFile(req.file, 'blog');
+    res.status(201).json({ success: true, imageUrl: `/uploads/${filename}` });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Failed to process image' });
+  }
 });
 
 /**

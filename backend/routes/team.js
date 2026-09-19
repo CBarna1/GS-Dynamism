@@ -2,7 +2,7 @@
 const express = require('express');
 const { authMiddleware, adminOnly } = require('../middleware/auth');
 const { TeamMember } = require('../models/index');
-const { makeUpload } = require('../utils/upload');
+const { makeUpload, saveOptimizedFile } = require('../utils/upload');
 
 const router = express.Router();
 const upload = makeUpload('team');
@@ -10,9 +10,14 @@ const upload = makeUpload('team');
 /**
  * POST /api/team/upload - Upload a member photo (admin only)
  */
-router.post('/upload', authMiddleware, adminOnly, upload.single('file'), (req, res) => {
+router.post('/upload', authMiddleware, adminOnly, upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
-  res.status(201).json({ success: true, imageUrl: `/uploads/${req.file.filename}` });
+  try {
+    const filename = await saveOptimizedFile(req.file, 'team');
+    res.status(201).json({ success: true, imageUrl: `/uploads/${filename}` });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Failed to process image' });
+  }
 });
 
 /**
