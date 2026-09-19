@@ -21,6 +21,7 @@ const ApplyPage = () => {
 
   const [checkingWindow, setCheckingWindow] = useState(true);
   const [openDate, setOpenDate] = useState<Date | null>(null);
+  const [content, setContent] = useState<Record<string, string>>({});
 
   const [captchaAnswer, setCaptchaAnswer] = useState('');
   const [captchaToken, setCaptchaToken] = useState('');
@@ -29,7 +30,9 @@ const ApplyPage = () => {
   useEffect(() => {
     api.get('/content')
       .then(res => {
-        const value = res.data?.data?.apply_open_date;
+        const data = res.data?.data || {};
+        setContent(data);
+        const value = data.apply_open_date;
         if (value) {
           const date = new Date(value);
           if (!isNaN(date.getTime()) && date.getTime() > Date.now()) {
@@ -148,7 +151,7 @@ const ApplyPage = () => {
       <div
         className="min-h-screen py-12 px-4"
         style={{
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(/img/corporate\ image\ 3.jpeg)',
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("${content.apply_bg_image || '/img/corporate image 3.jpeg'}")`,
           backgroundAttachment: 'fixed',
           backgroundSize: 'cover',
           backgroundPosition: 'center'

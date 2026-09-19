@@ -98,13 +98,13 @@ const Home = () => {
             {/* Desktop images */}
             <div className="hidden md:grid grid-cols-2 gap-6">
               <img
-                src="/img/IMG_2701.JPG.jpeg"
+                src={content.home_welcome_image_1 || '/img/IMG_2701.JPG.jpeg'}
                 alt="Guiding Stars students"
                 className="rounded-xl shadow-lg w-full h-64 object-cover"
                 loading="lazy"
               />
               <img
-                src="/img/image 2.png"
+                src={content.home_welcome_image_2 || '/img/image 2.png'}
                 alt="Guiding Stars team"
                 className="rounded-xl shadow-lg w-full h-64 object-cover"
                 loading="lazy"
@@ -114,7 +114,7 @@ const Home = () => {
             {/* Mobile single image */}
             <div className="md:hidden mb-6">
               <img
-                src="/img/_MG_6217-1.jpg"
+                src={content.home_welcome_image_mobile || '/img/_MG_6217-1.jpg'}
                 alt="Guiding Stars"
                 className="rounded-xl shadow-lg w-full h-64 object-cover"
                 loading="lazy"
@@ -150,7 +150,7 @@ const Home = () => {
               className="uppercase text-lg md:text-xl font-semibold tracking-wide"
               style={{ color: '#FF9148' }}
             >
-              Our Services
+              {content.home_services_eyebrow || 'Our Services'}
             </h6>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mt-3">
               Explore Our{' '}
@@ -162,11 +162,11 @@ const Home = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { icon: faRoad, tag: '1:1 Mentorship', title: 'Personalized Guidance', desc: 'Access tailored advice from experienced industry professionals dedicated to your career and professional growth.' },
-              { icon: faUsers, tag: 'Community', title: 'Networking Opportunities', desc: 'Forge connections with industry leaders, potential employers, and like-minded peers.' },
-              { icon: faBriefcase, tag: 'Knowledge', title: 'Industry Insights', desc: 'Dive deep into current industry trends and emerging strategies.' },
-              { icon: faTrophy, tag: 'Leadership', title: 'Career Advancement', desc: 'Receive mentorship focused on honing confident leadership skills.' },
-              { icon: faUser, tag: 'Self-Development', title: 'Personal Growth', desc: 'Embark on a journey of self-discovery, learning from the life experiences of esteemed role models.' },
+              { icon: faRoad, tag: content.home_service_1_tag || '1:1 Mentorship', title: content.home_service_1_title || 'Personalized Guidance', desc: content.home_service_1_desc || 'Access tailored advice from experienced industry professionals dedicated to your career and professional growth.' },
+              { icon: faUsers, tag: content.home_service_2_tag || 'Community', title: content.home_service_2_title || 'Networking Opportunities', desc: content.home_service_2_desc || 'Forge connections with industry leaders, potential employers, and like-minded peers.' },
+              { icon: faBriefcase, tag: content.home_service_3_tag || 'Knowledge', title: content.home_service_3_title || 'Industry Insights', desc: content.home_service_3_desc || 'Dive deep into current industry trends and emerging strategies.' },
+              { icon: faTrophy, tag: content.home_service_4_tag || 'Leadership', title: content.home_service_4_title || 'Career Advancement', desc: content.home_service_4_desc || 'Receive mentorship focused on honing confident leadership skills.' },
+              { icon: faUser, tag: content.home_service_5_tag || 'Self-Development', title: content.home_service_5_title || 'Personal Growth', desc: content.home_service_5_desc || 'Embark on a journey of self-discovery, learning from the life experiences of esteemed role models.' },
             ].map((service, idx) => (
               <Reveal key={idx} delay={idx * 80}>
                 <TiltCard className="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl border border-gray-100 h-full">
@@ -200,15 +200,15 @@ const Home = () => {
                 <div className="space-y-3 mb-8">
                   <div className="flex items-center gap-3">
                     <span className="text-xl" style={{ color: '#FF9148' }}>✓</span>
-                    <span className="text-gray-700">Shape emerging talent</span>
+                    <span className="text-gray-700">{content.home_mentor_benefit_1 || 'Shape emerging talent'}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-xl" style={{ color: '#FF9148' }}>✓</span>
-                    <span className="text-gray-700">Expand your network</span>
+                    <span className="text-gray-700">{content.home_mentor_benefit_2 || 'Expand your network'}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-xl" style={{ color: '#FF9148' }}>✓</span>
-                    <span className="text-gray-700">Give back to your community</span>
+                    <span className="text-gray-700">{content.home_mentor_benefit_3 || 'Give back to your community'}</span>
                   </div>
                 </div>
                 <Link
@@ -222,7 +222,7 @@ const Home = () => {
               {/* Right: Image */}
               <div className="hidden md:block">
                 <img
-                  src="/img/guiding stars team.jpg"
+                  src={content.home_mentor_image || '/img/guiding stars team.jpg'}
                   alt="Mentor"
                   className="w-full h-full object-cover"
                   loading="lazy"

@@ -7,16 +7,16 @@ import Tooltip from '../components/Tooltip';
 import { SEOHelmet } from '../hooks/useSEO';
 import api from '../services/api';
 
-const values = [
-  { title: 'Authenticity', desc: 'Staying true to our mission, vision, and the people we serve.', icon: '✦' },
-  { title: 'Excellence', desc: 'Striving for the highest standards in everything we do.', icon: '✦' },
-  { title: 'Innovation', desc: 'Embracing creativity and new ideas to deliver lasting impact.', icon: '✦' },
-  { title: 'Transparency', desc: 'Building trust through openness, honesty, and accountability.', icon: '✦' },
-  { title: 'Sustainability', desc: 'Creating enduring solutions for individuals, communities, and society.', icon: '✦' },
-  { title: 'Customer Focus', desc: 'Prioritizing the growth, needs, and aspirations of our mentees and partners.', icon: '✦' },
+const DEFAULT_VALUES = [
+  { title: 'Authenticity', desc: 'Staying true to our mission, vision, and the people we serve.' },
+  { title: 'Excellence', desc: 'Striving for the highest standards in everything we do.' },
+  { title: 'Innovation', desc: 'Embracing creativity and new ideas to deliver lasting impact.' },
+  { title: 'Transparency', desc: 'Building trust through openness, honesty, and accountability.' },
+  { title: 'Sustainability', desc: 'Creating enduring solutions for individuals, communities, and society.' },
+  { title: 'Customer Focus', desc: 'Prioritizing the growth, needs, and aspirations of our mentees and partners.' },
 ];
 
-const pillars = [
+const DEFAULT_PILLARS = [
   { title: 'Integrity', desc: 'Doing what is right, even when no one is watching.' },
   { title: 'Attitude', desc: 'Approaching every challenge with a growth mindset.' },
   { title: 'Loyalty', desc: 'Committed to the success of every individual we serve.' },
@@ -49,6 +49,17 @@ const About = () => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  const pillars = DEFAULT_PILLARS.map((p, idx) => ({
+    title: content[`about_pillar_${idx + 1}_title`] || p.title,
+    desc: content[`about_pillar_${idx + 1}_desc`] || p.desc,
+  }));
+
+  const values = DEFAULT_VALUES.map((v, idx) => ({
+    title: content[`about_value_${idx + 1}_title`] || v.title,
+    desc: content[`about_value_${idx + 1}_desc`] || v.desc,
+    icon: '✦',
+  }));
+
   return (
     <div className="bg-white min-h-screen">
       {/* SEO Meta Tags */}
@@ -59,7 +70,7 @@ const About = () => {
       {/* Hero Section */}
       <section className="relative">
         <img
-          src="/img/Top-Bunner-1.jpg"
+          src={content.about_hero_image || '/img/Top-Bunner-1.jpg'}
           alt="About Banner"
           className="w-full h-[70vh] object-cover brightness-75"
         />
@@ -76,7 +87,7 @@ const About = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h6 className="uppercase text-lg font-semibold" style={{ color: '#FF9148' }}>
-              About
+              {content.about_org_eyebrow || 'About'}
             </h6>
             <h2 className="text-4xl font-bold mt-2">
               ORGANISATION{' '}
@@ -101,7 +112,7 @@ const About = () => {
 
             <div className="grid grid-cols-2 gap-6">
               <img
-                src="img/IMG_0778.JPG"
+                src={content.about_org_image || 'img/IMG_0778.JPG'}
                 alt="About Image 1"
                 className="rounded-lg shadow-lg"
               />
@@ -135,7 +146,7 @@ const About = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h6 className="uppercase text-lg font-semibold" style={{ color: '#FF9148' }}>
-              What Sets Us Apart
+              {content.about_pillars_eyebrow || 'What Sets Us Apart'}
             </h6>
             <h2 className="text-4xl font-bold mt-2">
               THE HUMAN SIDE OF{' '}
@@ -144,9 +155,7 @@ const About = () => {
               </span>
             </h2>
             <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Beyond technical and academic proficiency, Guiding Stars places strong emphasis on
-              the human aspects of leadership. We believe great leaders are defined not just by
-              what they know, but by who they are.
+              {content.about_pillars_description || 'Beyond technical and academic proficiency, Guiding Stars places strong emphasis on the human aspects of leadership. We believe great leaders are defined not just by what they know, but by who they are.'}
             </p>
           </div>
 
@@ -174,7 +183,7 @@ const About = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h6 className="uppercase text-lg font-semibold" style={{ color: '#FF9148' }}>
-              Our Principles
+              {content.about_principles_eyebrow || 'Our Principles'}
             </h6>
             <h2 className="text-4xl font-bold mt-2">
               WHAT{' '}
@@ -183,8 +192,7 @@ const About = () => {
               </span>
             </h2>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-              Guided by these core principles, Guiding Stars continues to illuminate pathways to
-              success, shaping individuals who lead with wisdom, confidence, and impact.
+              {content.about_principles_description || 'Guided by these core principles, Guiding Stars continues to illuminate pathways to success, shaping individuals who lead with wisdom, confidence, and impact.'}
             </p>
           </div>
 

@@ -20,7 +20,7 @@ const Contact = () => {
       {/* Hero Section */}
       <section className="relative">
         <img
-          src="/img/Top-Bunner-1.jpg"
+          src={content.contact_hero_image || '/img/Top-Bunner-1.jpg'}
           alt="Contact Banner"
           className="w-full h-[70vh] object-cover brightness-75"
         />

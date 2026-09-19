@@ -24,6 +24,7 @@ const MentorApply = () => {
 
   const [checkingWindow, setCheckingWindow] = useState(true);
   const [openDate, setOpenDate] = useState<Date | null>(null);
+  const [content, setContent] = useState<Record<string, string>>({});
 
   const [captchaAnswer, setCaptchaAnswer] = useState('');
   const [captchaToken, setCaptchaToken] = useState('');
@@ -32,7 +33,9 @@ const MentorApply = () => {
   useEffect(() => {
     api.get('/content')
       .then(res => {
-        const value = res.data?.data?.mentor_apply_open_date;
+        const data = res.data?.data || {};
+        setContent(data);
+        const value = data.mentor_apply_open_date;
         if (value) {
           const date = new Date(value);
           if (!isNaN(date.getTime()) && date.getTime() > Date.now()) {
@@ -112,7 +115,7 @@ const MentorApply = () => {
       {/* Hero Section */}
       <section className="relative">
         <img
-          src="/img/Top-Bunner-1.jpg"
+          src={content.mentor_apply_hero_image || '/img/Top-Bunner-1.jpg'}
           alt="Mentor Banner"
           className="w-full h-[70vh] object-cover brightness-75"
         />
