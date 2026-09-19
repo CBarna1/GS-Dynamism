@@ -4,7 +4,7 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const sharp = require('sharp');
+const { Jimp } = require('jimp');
 
 const uploadsDir = path.join(__dirname, '../public/uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -13,7 +13,6 @@ if (!fs.existsSync(uploadsDir)) {
 
 const MAX_WIDTH = 1920;
 const JPEG_QUALITY = 78;
-const PNG_QUALITY = 80;
 const COMPRESS_THRESHOLD = 300 * 1024; // don't bother re-encoding already-small files
 
 // Uploads are held in memory just long enough to compress, then written to
@@ -45,10 +44,13 @@ async function saveOptimizedFile(file, prefix) {
 
   if ((isJpeg || isPng) && file.buffer.length > COMPRESS_THRESHOLD) {
     try {
-      const pipeline = sharp(file.buffer).rotate().resize({ width: MAX_WIDTH, withoutEnlargement: true });
+      const image = await Jimp.read(file.buffer); // auto-applies EXIF rotation
+      if (image.bitmap.width > MAX_WIDTH) {
+        image.resize({ w: MAX_WIDTH });
+      }
       outBuffer = isPng
-        ? await pipeline.png({ quality: PNG_QUALITY, compressionLevel: 9 }).toBuffer()
-        : await pipeline.jpeg({ quality: JPEG_QUALITY, mozjpeg: true }).toBuffer();
+        ? await image.getBuffer('image/png', { deflateLevel: 9 })
+        : await image.getBuffer('image/jpeg', { quality: JPEG_QUALITY });
       ext = isPng ? '.png' : '.jpg';
     } catch (err) {
       console.error('[upload] Image optimization failed, saving original:', err.message);
