@@ -87,55 +87,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-/**
- * POST /api/auth/register-test
- * TEMPORARY DEVELOPMENT ENDPOINT ONLY
- * Creates a test admin user if it doesn't exist
- * Remove this before production!
- */
-router.post('/register-test', async (req, res) => {
-  try {
-    const testEmail = 'admin@guidingstars.com';
-    const testPassword = 'password123'; // Change this in real use!
-
-    const hashedPassword = await bcrypt.hash(testPassword, 10);
-
-    const [user, created] = await User.findOrCreate({
-      where: { email: testEmail },
-      defaults: {
-        email: testEmail,
-        password_hash: hashedPassword,
-        role: 'admin',                // As per SRS: admin role
-        first_name: 'Admin',
-        last_name: 'TestUser',
-      },
-    });
-
-    if (created) {
-      return res.status(201).json({
-        success: true,
-        message: 'Test admin user created successfully',
-        email: testEmail,
-        password: testPassword, // Only shown once - for testing
-        note: 'REMOVE THIS ENDPOINT BEFORE DEPLOYMENT',
-      });
-    } else {
-      return res.status(200).json({
-        success: true,
-        message: 'Test admin user already exists',
-        email: testEmail,
-      });
-    }
-  } catch (error) {
-    console.error('Test register error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to create test user',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
-    });
-  }
-});
-
 // Placeholder for future endpoints (as per SRS FR-1.4, FR-1.5)
 router.post('/logout', (req, res) => {
   // JWT is stateless → client just deletes token

@@ -42,7 +42,7 @@ router.get('/dashboard', menteAuth, async (req, res) => {
 
     // 1. Get mentee info - Use the updated field names from your Mentee model
     const mentee = await Mentee.findByPk(menteeId, {
-      attributes: { exclude: ['password_hash', 'verification_token', 'activation_token'] },
+      attributes: { exclude: ['password_hash', 'verification_token', 'verification_token_expires'] },
     });
 
     if (!mentee) {
@@ -124,6 +124,10 @@ router.get('/progress', menteAuth, async (req, res) => {
   }
 });
 
+// Fields a mentee may edit themselves. Email, status, verification and password
+// fields are deliberately excluded.
+const EDITABLE_PROFILE_FIELDS = ['first_name', 'last_name', 'phone', 'background', 'goals', 'preferences'];
+
 /**
  * PUT /profile
  */
@@ -132,8 +136,10 @@ router.put('/profile', menteAuth, async (req, res) => {
     const mentee = await Mentee.findByPk(req.menteeId);
     if (!mentee) return res.status(404).json({ success: false, message: 'Mentee not found' });
 
-    await mentee.update(req.body);
-    res.json({ success: true, message: 'Profile updated', data: mentee });
+    await mentee.update(req.body, { fields: EDITABLE_PROFILE_FIELDS });
+
+    const { password_hash, verification_token, verification_token_expires, ...profile } = mentee.toJSON();
+    res.json({ success: true, message: 'Profile updated', data: profile });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Update failed' });
   }

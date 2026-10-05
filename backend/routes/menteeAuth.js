@@ -12,45 +12,24 @@ const router = express.Router();
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    return res.status(400).json({ success: false, message: 'Email and password are required' });
+  }
+
   try {
     const mentee = await Mentee.findOne({ where: { email } });
-    const testHash = await bcrypt.hash('password123', 10);
-    console.log('COPY THIS HASH:', testHash);
 
-    // Add these lines right at the start of your login route
-    console.log('--- PASSWORD DATA CHECK ---');
-    console.log('Password Type:', typeof password);
-    console.log('Password Length:', password ? password.length : 0);
-    console.log('Password Value: "' + password + '"'); // The quotes will show if there are spaces
-
-    console.log('--- LOGIN ATTEMPT DEBUG ---');
-    console.log('Email:', email);
-    console.log('User Found?:', mentee ? 'YES' : 'NO');
-
-    if (!mentee) {
-      return res.status(401).json({ success: false, message: 'Invalid email or password' });
-    }
-
-    // DEBUG THE FLAGS
-    console.log('Flag - email_verified:', mentee.email_verified);
-    console.log('Flag - application_status:', mentee.application_status);
-    console.log('Flag - has password_hash?:', mentee.password_hash ? 'YES' : 'NO');
-    
-
-    // If it's failing here, we'll see exactly which flag is 0 or wrong in the console
-    if (!mentee.email_verified) {
-      return res.status(403).json({ success: false, message: 'Account not verified (email_verified is 0)' });
-    }
-
-    if (mentee.application_status !== 'active') {
-      return res.status(403).json({ success: false, message: `Status is ${mentee.application_status}, not active` });
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, mentee.password_hash);
-    console.log('Password Match?:', isPasswordValid ? 'YES' : 'NO');
-
+    // Check the password before revealing anything about the account's status
+    const isPasswordValid = Boolean(mentee?.password_hash) && await bcrypt.compare(password, mentee.password_hash);
     if (!isPasswordValid) {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
+    }
+
+    if (!mentee.email_verified || mentee.application_status !== 'active') {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account is not active yet. Please use the link in your approval email to set your password.',
+      });
     }
 
     const token = jwt.sign({ id: mentee.id, role: 'mentee' }, process.env.JWT_SECRET, { expiresIn: '7d' });
