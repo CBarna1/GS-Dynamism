@@ -22,3 +22,5 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.bak
+# Local data backups written by scripts (contain personal data)
+backups/
