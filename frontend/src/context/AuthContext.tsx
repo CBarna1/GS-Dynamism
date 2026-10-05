@@ -15,6 +15,11 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 // Session timeout duration in milliseconds (15 minutes)
 const SESSION_TIMEOUT = 15 * 60 * 1000;
 
+// Last activity is kept in localStorage so the timeout also applies after the
+// tab or browser was closed (e.g. an admin who walked away from a shared phone).
+const LAST_ACTIVITY_KEY = 'last_activity';
+const markActivity = () => localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
@@ -30,6 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Only set timer if user is logged in
     if (token) {
+      markActivity();
       const newTimer = setTimeout(() => {
         console.log('[AuthContext] Session timeout due to inactivity');
         logout();
@@ -45,7 +51,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
      * which storage key or login page was used.
      */
     const session = getStoredSession();
-    if (session) {
+    const lastActivity = Number(localStorage.getItem(LAST_ACTIVITY_KEY));
+    const idleTooLong = !lastActivity || Date.now() - lastActivity > SESSION_TIMEOUT;
+
+    if (session && idleTooLong) {
+      console.log('[AuthContext] Stored session expired due to inactivity');
+      clearStoredTokens();
+      localStorage.removeItem(LAST_ACTIVITY_KEY);
+      localStorage.removeItem('mentee_user');
+    } else if (session) {
       setToken(session.token);
       setRole(session.role);
     }
@@ -103,6 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Only one session at a time
     clearStoredTokens();
     localStorage.setItem(TOKEN_KEYS[actualRole], newToken);
+    markActivity();
 
     setToken(newToken);
     setRole(actualRole);
@@ -112,6 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     console.log('[AuthContext] Logout called');
     clearStoredTokens();
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
     localStorage.removeItem('mentee_user');
     setToken(null);
     setRole(null);

@@ -92,20 +92,22 @@ function ProtectedRoute({ children, requiredRole }: { children: JSX.Element; req
 }
 
 /**
- * GuestRoute: Redirects logged-in users away from login pages
+ * GuestRoute: skips a login page only when the existing session belongs to
+ * that same portal. Someone else's session on a shared device (e.g. an admin
+ * still signed in) never redirects a mentee/mentor into another portal; the
+ * login form is shown instead and a successful login replaces that session.
  */
-function GuestRoute({ children }: { children: JSX.Element }) {
+function GuestRoute({ children, portal }: { children: JSX.Element; portal: 'admin' | 'mentor' | 'mentee' }) {
   const context = useContext(AuthContext);
   if (!context || context.isLoading) return null;
 
-  if (context.token) {
+  if (context.token && context.role?.toLowerCase() === portal) {
     const homeByRole: Record<string, string> = {
       admin: '/dashboard',
       mentor: '/mentor/portal',
       mentee: '/mentee/dashboard',
     };
-    const dash = homeByRole[context.role?.toLowerCase() || ''] || '/home';
-    return <Navigate to={dash} replace />;
+    return <Navigate to={homeByRole[portal]} replace />;
   }
 
   return children;
@@ -205,11 +207,11 @@ function AppRoutes() {
   <Route path="/forgot-password" element={<PublicLayout><ForgotPassword /></PublicLayout>} />
 
         {/* Guest routes */}
-        <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
-        <Route path="/admin-login" element={<GuestRoute><Login /></GuestRoute>} />
-        <Route path="/mentee/login" element={<GuestRoute><MenteeLogin /></GuestRoute>} />
+        <Route path="/login" element={<GuestRoute portal="admin"><Login /></GuestRoute>} />
+        <Route path="/admin-login" element={<GuestRoute portal="admin"><Login /></GuestRoute>} />
+        <Route path="/mentee/login" element={<GuestRoute portal="mentee"><MenteeLogin /></GuestRoute>} />
         <Route path="/mentee/set-password/:token" element={<SetPasswordPage />} />
-        <Route path="/mentor/login" element={<GuestRoute><MentorLogin /></GuestRoute>} />
+        <Route path="/mentor/login" element={<GuestRoute portal="mentor"><MentorLogin /></GuestRoute>} />
 
         {/* Admin Routes - WITH Sidebar */}
         <Route path="/dashboard" element={

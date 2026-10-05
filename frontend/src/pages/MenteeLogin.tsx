@@ -12,10 +12,10 @@ function MenteeLogin() {
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
 
-  // Clear admin/mentor tokens when accessing mentee login page
+  // Opening the mentee login signs out any other portal's session on this device
+  // (GuestRoute already redirected if the session was a mentee one)
   useEffect(() => {
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('mentor_token');
+    if (authContext?.token) authContext.logout();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {

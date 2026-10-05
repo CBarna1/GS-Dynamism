@@ -14,10 +14,10 @@ function MentorLogin() {
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
 
-  // Clear admin/mentee tokens when accessing mentor login page
+  // Opening the mentor login signs out any other portal's session on this device
+  // (GuestRoute already redirected if the session was a mentor one)
   useEffect(() => {
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('mentee_token');
+    if (authContext?.token) authContext.logout();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {

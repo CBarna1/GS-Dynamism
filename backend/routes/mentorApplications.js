@@ -247,7 +247,7 @@ router.put('/:id/approve', authMiddleware, adminOnly, async (req, res) => {
     // Send approval email
     try {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      const loginUrl = `${frontendUrl}/login`;
+      const loginUrl = `${frontendUrl}/mentor/login`;
       
       await sendEmail(
         application.email,

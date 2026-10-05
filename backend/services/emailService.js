@@ -50,7 +50,7 @@ const sendWelcomeEmail = async (menteeEmail, menteeName, activationToken) => {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
-          .header { background: linear-gradient(135deg, #FF9148, #E8722E); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header { background-color: #666565; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
           .content { background-color: white; padding: 30px; border-radius: 0 0 8px 8px; }
           .button { display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, #FF9148, #E8722E); color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
           .footer { text-align: center; margin-top: 20px; color: #7f8c8d; font-size: 12px; }
@@ -58,16 +58,16 @@ const sendWelcomeEmail = async (menteeEmail, menteeName, activationToken) => {
       </head>
       <body>
         <div class="container">
-          <div class="header">
-            <img src="https://guidingstarszm.com/img/HORIZONTAL.png" alt="Guiding Stars" style="width:80px;height:80px;margin:0 auto 20px;display:block;">
-            <h1 style="margin: 0;">Welcome to Guiding Stars! 🌟</h1>
+          <div class="header" style="background-color: #666565; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+            <img src="https://guidingstarszm.com/img/HORIZONTAL.png" alt="Guiding Stars" width="200" style="width:200px;max-width:100%;height:auto;margin:0 auto 10px;display:block;">
+            <h1 style="margin: 0;">Welcome to Guiding Stars!</h1>
           </div>
           <div class="content">
             <h2>Congratulations, ${menteeName}!</h2>
             <p>We are excited to inform you that your application to the Guiding Stars Mentorship Program has been <strong>approved</strong>!</p>
             <p>To complete your account setup, please set a password by clicking the button below:</p>
             <div style="text-align: center;">
-              <a href="${activationLink}" class="button">🔐 Set My Password</a>
+              <a href="${activationLink}" class="button">Set My Password</a>
             </div>
             <p><strong>This activation link will expire in 24 hours.</strong></p>
             <p>Once you set your password, you will be able to:</p>
@@ -188,7 +188,7 @@ const matchEmailHtml = ({ recipientName, partnerName, partnerRole, partnerEmail,
     <style>
       body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
       .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
-      .header { background: linear-gradient(135deg, #FF9148, #E8722E); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+      .header { background-color: #666565; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
       .content { background-color: white; padding: 30px; border-radius: 0 0 8px 8px; }
       .details-box { background-color: #f0f0f0; border-left: 4px solid #FF9148; padding: 15px; margin: 20px 0; border-radius: 4px; }
       .button { display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, #FF9148, #E8722E); color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
@@ -197,8 +197,9 @@ const matchEmailHtml = ({ recipientName, partnerName, partnerRole, partnerEmail,
   </head>
   <body>
     <div class="container">
-      <div class="header">
-        <h1 style="margin: 0;">You've Been Matched! 🌟</h1>
+      <div class="header" style="background-color: #666565; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+        <img src="https://guidingstarszm.com/img/HORIZONTAL.png" alt="Guiding Stars" width="200" style="width:200px;max-width:100%;height:auto;margin:0 auto 10px;display:block;">
+        <h1 style="margin: 0;">You've Been Matched!</h1>
       </div>
       <div class="content">
         <h2>Hello ${escapeHtml(recipientName)},</h2>
