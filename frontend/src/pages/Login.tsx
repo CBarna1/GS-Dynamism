@@ -26,9 +26,12 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/auth/login', { email, password, expectedRole: 'admin' });
       const { token } = response.data;
-      if (authContext) authContext.login(token, 'admin');
+      if (!authContext?.login(token, 'admin')) {
+        setError('This account cannot sign in here. Mentors should use the Mentor Login page.');
+        return;
+      }
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');

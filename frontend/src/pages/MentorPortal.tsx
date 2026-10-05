@@ -42,7 +42,7 @@ interface Match {
   mentee_id: number;
   match_date: string;
   status: string;
-  mentee?: Mentee;
+  Mentee?: Mentee;
 }
 
 interface ProgressEntry {
@@ -333,17 +333,17 @@ function MentorPortal() {
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-gray-900">
-                        {match.mentee?.first_name} {match.mentee?.last_name}
+                        {match.Mentee?.first_name} {match.Mentee?.last_name}
                       </h3>
-                      <p className="text-gray-600 text-sm mt-1">{match.mentee?.email}</p>
-                      {match.mentee?.phone && (
-                        <p className="text-gray-600 text-sm">{match.mentee.phone}</p>
+                      <p className="text-gray-600 text-sm mt-1">{match.Mentee?.email}</p>
+                      {match.Mentee?.phone && (
+                        <p className="text-gray-600 text-sm">{match.Mentee.phone}</p>
                       )}
                       <button
                         onClick={() => navigate('/mentor/messages')}
                         className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm font-medium"
                       >
-                        📧 Message {match.mentee?.first_name}
+                        📧 Message {match.Mentee?.first_name}
                       </button>
                     </div>
                     <div className="text-right">

@@ -82,9 +82,17 @@ function Matches() {
         };
       });
 
+      // Only offer people who are not already in an active pairing
+      const activeMatches = enrichedMatches.filter((m: Match) => m.status === 'active');
+      const pairedMentorIds = new Set(activeMatches.map((m: Match) => m.mentor_id));
+      const pairedMenteeIds = new Set(activeMatches.map((m: Match) => m.mentee_id));
+
       setMatches(enrichedMatches);
-      setMentors((mentorsRes.data.data || mentorsRes.data).filter((m: Mentor) => (m.status || '').toLowerCase() === 'active'));
-      setMentees((menteesRes.data.data || menteesRes.data).filter((m: Mentee) => (m.application_status || '').toLowerCase() === 'approved'));
+      setMentors((mentorsRes.data.data || mentorsRes.data).filter((m: Mentor) =>
+        (m.status || '').toLowerCase() === 'active' && !pairedMentorIds.has(m.id)));
+      // Approved mentees become 'active' once they set their password; both can be matched
+      setMentees((menteesRes.data.data || menteesRes.data).filter((m: Mentee) =>
+        ['approved', 'active'].includes((m.application_status || '').toLowerCase()) && !pairedMenteeIds.has(m.id)));
       setError('');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load data');
@@ -100,20 +108,20 @@ function Matches() {
       return;
     }
     try {
-      await api.post('/matches', {
+      const res = await api.post('/matches', {
         mentor_id: parseInt(selectedMentor),
         mentee_id: parseInt(selectedMentee),
         match_date: matchDate,
         notes: matchNotes,
         status: 'active',
       });
-      setSuccess('Match created successfully!');
+      setSuccess(res.data?.message || 'Match created successfully!');
       setSelectedMentor('');
       setSelectedMentee('');
       setMatchNotes('');
       setActiveTab('existing');
       fetchData();
-      setTimeout(() => setSuccess(''), 3000);
+      setTimeout(() => setSuccess(''), 6000);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to create match');
     }

@@ -31,11 +31,12 @@ function MenteeLogin() {
 
       const { token, user } = response.data;
 
-      localStorage.setItem('mentee_user', JSON.stringify(user));
-
-      if (authContext) {
-        authContext.login(token, 'mentee');
+      if (!authContext?.login(token, 'mentee')) {
+        setError('Login failed. Please try again.');
+        return;
       }
+
+      localStorage.setItem('mentee_user', JSON.stringify(user));
 
       navigate('/mentee/dashboard');
     } catch (err: any) {

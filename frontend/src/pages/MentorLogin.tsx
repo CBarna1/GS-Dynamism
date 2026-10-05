@@ -26,15 +26,15 @@ function MentorLogin() {
     setLoading(true);
 
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/auth/login', { email, password, expectedRole: 'mentor' });
       const { token } = response.data;
-      
-      // Store token in both AuthContext and localStorage for persistence
-      if (authContext) {
-        authContext.login(token, 'mentor');
+
+      // AuthContext persists the token and rejects non-mentor accounts
+      if (!authContext?.login(token, 'mentor')) {
+        setError('This account cannot sign in here. Please use the Admin Login page.');
+        return;
       }
-      localStorage.setItem('mentor_token', token);
-      
+
       // Redirect to mentor portal
       navigate('/mentor/portal');
     } catch (err: any) {

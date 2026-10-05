@@ -591,6 +591,14 @@ router.delete('/:id', authMiddleware, adminOnly, async (req, res) => {
       });
     }
 
+    // Rejected applicants are kept on record so they can be contacted again later
+    if (application.status === 'rejected') {
+      return res.status(400).json({
+        success: false,
+        message: 'Rejected applications are kept on record and cannot be deleted',
+      });
+    }
+
     await application.destroy();
 
     res.status(200).json({

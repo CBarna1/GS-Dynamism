@@ -1,5 +1,6 @@
-// src/services/api.ts (or api.js)
+// src/services/api.ts
 import axios from 'axios';
+import { getStoredSession } from '../utils/authToken';
 
 const api = axios.create({
   baseURL: '/api',
@@ -7,27 +8,12 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  // try common storage keys used in this project
-  const token =
-    localStorage.getItem('admin_token') ||
-    localStorage.getItem('token') ||
-    localStorage.getItem('authToken') ||
-    localStorage.getItem('ACCESS_TOKEN') ||
-    sessionStorage.getItem('token');
-
-  console.log('[api] Checking tokens:', {
-    admin_token: localStorage.getItem('admin_token'),
-    token: localStorage.getItem('token'),
-    authToken: localStorage.getItem('authToken'),
-    found_token: token ? 'YES' : 'NO'
-  });
+  // Attach whichever session is active (admin, mentor or mentee)
+  const token = getStoredSession()?.token;
 
   if (token) {
     if (!config.headers) config.headers = {} as any;
     config.headers.Authorization = `Bearer ${token}`;
-    console.log('[api] Adding Authorization header:', config.headers.Authorization);
-  } else {
-    console.warn('[api] no auth token found for request', config.url);
   }
 
   return config;

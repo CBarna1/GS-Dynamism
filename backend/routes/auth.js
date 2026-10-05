@@ -13,7 +13,9 @@ const router = express.Router();
  * Creates JWT session token (FR-1.1, FR-1.2, FR-1.3, FR-1.6, FR-1.7)
  */
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  // expectedRole: which portal the login came from ('admin' or 'mentor').
+  // A mentor must never get a session from the admin login page (or vice versa).
+  const { email, password, expectedRole } = req.body;
 
   // Basic input validation
   if (!email || !password) {
@@ -40,6 +42,14 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password',
+      });
+    }
+
+    if (expectedRole && user.role !== expectedRole) {
+      const portal = user.role === 'mentor' ? 'the Mentor Login page' : 'the Admin Login page';
+      return res.status(403).json({
+        success: false,
+        message: `This account cannot sign in here. Please use ${portal}.`,
       });
     }
 

@@ -58,9 +58,11 @@ router.get('/dashboard', menteAuth, async (req, res) => {
         include: [
           {
             model: Mentor,
-            include: [{ 
-              model: User, 
-              attributes: ['first_name', 'last_name', 'email'] 
+            as: 'Mentor',
+            include: [{
+              model: User,
+              as: 'User',
+              attributes: ['first_name', 'last_name', 'email']
             }],
           },
         ],

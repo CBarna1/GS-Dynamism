@@ -1,7 +1,8 @@
 // src/pages/MenteeDashboard.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
 
 interface Mentee {
   id: number;
@@ -49,6 +50,7 @@ function MenteeDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     fetchDashboardData();
@@ -87,6 +89,7 @@ function MenteeDashboard() {
   const handleLogout = () => {
     localStorage.removeItem('mentee_token');
     localStorage.removeItem('mentee_user');
+    authContext?.logout();
     navigate('/mentee/login');
   };
 

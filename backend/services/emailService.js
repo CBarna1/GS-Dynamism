@@ -175,9 +175,96 @@ const sendEmail = async (to, subject, htmlBody) => {
   }
 };
 
+const escapeHtml = (value) => String(value ?? '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;');
+
+const matchEmailHtml = ({ recipientName, partnerName, partnerRole, partnerEmail, details, portalLink }) => `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+      .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
+      .header { background: linear-gradient(135deg, #FF9148, #E8722E); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+      .content { background-color: white; padding: 30px; border-radius: 0 0 8px 8px; }
+      .details-box { background-color: #f0f0f0; border-left: 4px solid #FF9148; padding: 15px; margin: 20px 0; border-radius: 4px; }
+      .button { display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, #FF9148, #E8722E); color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+      .footer { text-align: center; margin-top: 20px; color: #7f8c8d; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1 style="margin: 0;">You've Been Matched! 🌟</h1>
+      </div>
+      <div class="content">
+        <h2>Hello ${escapeHtml(recipientName)},</h2>
+        <p>Great news! You have been paired with your ${partnerRole} in the Guiding Stars Mentorship Program.</p>
+        <div class="details-box">
+          <p><strong>Your ${partnerRole}:</strong> ${escapeHtml(partnerName)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(partnerEmail)}</p>
+          ${details}
+        </div>
+        <p>Log in to your portal to see your pairing and start a conversation through the built-in messages.</p>
+        <div style="text-align: center;">
+          <a href="${portalLink}" class="button">Go to My Portal</a>
+        </div>
+        <p>If you have any questions, feel free to reach out to us at <strong>admissions@guidingstarszm.com</strong></p>
+        <p>Best regards,<br><strong>The Guiding Stars Team</strong></p>
+      </div>
+      <div class="footer">
+        <p>This is an automated message. Please do not reply to this email.</p>
+        <p>&copy; ${new Date().getFullYear()} Guiding Stars. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+  </html>
+`;
+
+// Notify both mentor and mentee that they have been paired.
+// Never throws; returns the result for each side.
+const sendMatchNotificationEmails = async ({ mentor, mentee }) => {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const mentorName = `${mentor.first_name} ${mentor.last_name}`;
+  const menteeName = `${mentee.first_name} ${mentee.last_name}`;
+
+  const toMentor = sendEmail(
+    mentor.email,
+    `You've been matched with your mentee, ${menteeName}`,
+    matchEmailHtml({
+      recipientName: mentor.first_name,
+      partnerName: menteeName,
+      partnerRole: 'mentee',
+      partnerEmail: mentee.email,
+      details: mentee.goals ? `<p><strong>Goals:</strong> ${escapeHtml(mentee.goals)}</p>` : '',
+      portalLink: `${frontendUrl}/mentor/login`,
+    })
+  );
+
+  const toMentee = sendEmail(
+    mentee.email,
+    `You've been matched with your mentor, ${mentorName}`,
+    matchEmailHtml({
+      recipientName: mentee.first_name,
+      partnerName: mentorName,
+      partnerRole: 'mentor',
+      partnerEmail: mentor.email,
+      details: mentor.expertise_areas ? `<p><strong>Expertise:</strong> ${escapeHtml(mentor.expertise_areas)}</p>` : '',
+      portalLink: `${frontendUrl}/mentee/login`,
+    })
+  );
+
+  const [mentorResult, menteeResult] = await Promise.all([toMentor, toMentee]);
+  return { mentor: mentorResult, mentee: menteeResult };
+};
+
 module.exports = {
   sendWelcomeEmail,
   sendRejectionEmail,
   sendEmail,
+  sendMatchNotificationEmails,
   generateVerificationToken
 };

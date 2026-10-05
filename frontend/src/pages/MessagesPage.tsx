@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Dialog } from '@headlessui/react';
+import { getStoredSession } from '../utils/authToken';
 
 interface Message {
   id: number;
@@ -11,12 +12,12 @@ interface Message {
   content: string;
   read_at: string | null;
   created_at: string;
-  SenderMentee?: { id: number; first_name: string; last_name: string; email: string };
-  SenderMentor?: { id: number; User: { first_name: string; last_name: string; email: string } };
+  senderName: string;
 }
 
 interface Conversation {
   matchId: number;
+  matchStatus: string;
   otherPerson: {
     id: number;
     name: string;
@@ -32,10 +33,10 @@ interface Conversation {
 }
 
 interface User {
-  id: number;
-  email: string;
   role: string;
 }
+
+const authHeaders = () => ({ Authorization: `Bearer ${getStoredSession()?.token}` });
 
 export default function MessagesPage() {
   const navigate = useNavigate();
@@ -53,19 +54,12 @@ export default function MessagesPage() {
 
   // Get user info from token
   useEffect(() => {
-    const token = localStorage.getItem('mentee_token') || localStorage.getItem('mentor_token') || localStorage.getItem('admin_token');
-    if (!token) {
+    const session = getStoredSession();
+    if (!session) {
       navigate('/');
       return;
     }
-
-    try {
-      const decoded = JSON.parse(atob(token.split('.')[1]));
-      setUser(decoded);
-    } catch (error) {
-      console.error('Error decoding token:', error);
-      navigate('/');
-    }
+    setUser({ role: session.role });
   }, [navigate]);
 
   // Fetch conversations
@@ -85,15 +79,14 @@ export default function MessagesPage() {
 
   const fetchConversations = async () => {
     try {
-      const token = localStorage.getItem('mentee_token') || localStorage.getItem('mentor_token') || localStorage.getItem('admin_token');
       const response = await axios.get('/api/messages/conversations/all', {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: authHeaders(),
       });
       setConversations(response.data.data);
 
       // Get unread count
       const countResponse = await axios.get('/api/messages/unread/count', {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: authHeaders(),
       });
       setUnreadCount(countResponse.data.count);
     } catch (error) {
@@ -114,9 +107,8 @@ export default function MessagesPage() {
   const fetchMessages = async () => {
     if (!selectedMatchId) return;
     try {
-      const token = localStorage.getItem('mentee_token') || localStorage.getItem('mentor_token') || localStorage.getItem('admin_token');
       const response = await axios.get(`/api/messages/${selectedMatchId}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: authHeaders(),
       });
       setMessages(response.data.data);
       // Auto-scroll to bottom
@@ -135,31 +127,28 @@ export default function MessagesPage() {
 
     setSending(true);
     try {
-      const token = localStorage.getItem('mentee_token') || localStorage.getItem('mentor_token') || localStorage.getItem('admin_token');
-      
-      // Find recipient_id from conversation
-      const conv = conversations.find(c => c.matchId === selectedMatchId);
-      if (!conv) return;
-
+      // The server works out the recipient from the pairing
       await axios.post(
         '/api/messages',
         {
-          recipient_id: conv.otherPerson.id,
           match_id: selectedMatchId,
           content: newMessage,
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: authHeaders() }
       );
 
       setNewMessage('');
       await fetchMessages();
       await fetchConversations();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
+      alert(error.response?.data?.message || 'Message could not be sent. Please try again.');
     } finally {
       setSending(false);
     }
   };
+
+  const canSend = conversations.find(c => c.matchId === selectedMatchId)?.matchStatus === 'active';
 
   if (loading) {
     return (
@@ -177,7 +166,14 @@ export default function MessagesPage() {
       {/* Left Panel: Conversations */}
       <div className={`w-full md:w-1/3 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r flex flex-col`}>
         <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-orange-400 to-orange-600 text-white flex justify-between items-center">
-          <h2 className="text-xl font-bold">Messages {unreadCount > 0 && <span className="text-sm bg-red-500 px-2 py-1 rounded-full ml-2">{unreadCount}</span>}</h2>
+          <button
+            onClick={() => navigate(user?.role === 'mentor' ? '/mentor/portal' : '/mentee/dashboard')}
+            className="p-2 hover:bg-orange-500/30 rounded-lg transition"
+            title="Back to portal"
+          >
+            ←
+          </button>
+          <h2 className="text-xl font-bold flex-1 ml-2">Messages {unreadCount > 0 && <span className="text-sm bg-red-500 px-2 py-1 rounded-full ml-2">{unreadCount}</span>}</h2>
           <button
             onClick={() => {
               setIsDarkMode(!isDarkMode);
@@ -211,7 +207,9 @@ export default function MessagesPage() {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <h3 className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-800'}`}>{conv.otherPerson.name}</h3>
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{conv.otherPerson.role}</p>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {conv.otherPerson.role}{conv.matchStatus !== 'active' && ` · ${conv.matchStatus}`}
+                    </p>
                     {conv.lastMessage && (
                       <p className={`text-sm truncate mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{conv.lastMessage.content}</p>
                     )}
@@ -249,13 +247,8 @@ export default function MessagesPage() {
                 </div>
               ) : (
                 messages.map((msg) => {
-                  const isOwn = msg.sender_id === user?.id;
-                  const senderName =
-                    msg.SenderMentee?.first_name
-                      ? `${msg.SenderMentee.first_name} ${msg.SenderMentee.last_name}`
-                      : msg.SenderMentor?.User
-                      ? `${msg.SenderMentor.User.first_name} ${msg.SenderMentor.User.last_name}`
-                      : 'Unknown';
+                  const isOwn = msg.sender_role === user?.role;
+                  const senderName = msg.senderName;
 
                   return (
                     <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
@@ -287,7 +280,8 @@ export default function MessagesPage() {
                 <textarea
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type a message..."
+                  placeholder={canSend ? 'Type a message...' : 'This pairing has ended; history is read-only'}
+                  disabled={!canSend}
                   autoFocus
                   rows={2}
                   className={`flex-1 px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 text-base resize-none ${
@@ -298,7 +292,7 @@ export default function MessagesPage() {
                 />
                 <button
                   type="submit"
-                  disabled={sending || !newMessage.trim()}
+                  disabled={sending || !newMessage.trim() || !canSend}
                   className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold flex items-center gap-2"
                 >
                   <span>📤</span>
@@ -344,13 +338,8 @@ export default function MessagesPage() {
                   </div>
                 ) : (
                   messages.map((msg) => {
-                    const isOwn = msg.sender_id === user?.id;
-                    const senderName =
-                      msg.SenderMentee?.first_name
-                        ? `${msg.SenderMentee.first_name} ${msg.SenderMentee.last_name}`
-                        : msg.SenderMentor?.User
-                        ? `${msg.SenderMentor.User.first_name} ${msg.SenderMentor.User.last_name}`
-                        : 'Unknown';
+                    const isOwn = msg.sender_role === user?.role;
+                    const senderName = msg.senderName;
 
                     return (
                       <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
@@ -381,7 +370,8 @@ export default function MessagesPage() {
                   <textarea
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type a message..."
+                    placeholder={canSend ? 'Type a message...' : 'This pairing has ended; history is read-only'}
+                    disabled={!canSend}
                     autoFocus
                     rows={2}
                     className={`flex-1 px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 text-base resize-none ${
@@ -392,7 +382,7 @@ export default function MessagesPage() {
                   />
                   <button
                     type="submit"
-                    disabled={sending || !newMessage.trim()}
+                    disabled={sending || !newMessage.trim() || !canSend}
                     className="px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed font-semibold w-full flex items-center justify-center gap-2"
                   >
                     <span>📤</span>

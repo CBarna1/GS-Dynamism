@@ -99,7 +99,12 @@ function GuestRoute({ children }: { children: JSX.Element }) {
   if (!context || context.isLoading) return null;
 
   if (context.token) {
-    const dash = context.role?.toLowerCase() === 'admin' ? "/dashboard" : "/mentee/dashboard";
+    const homeByRole: Record<string, string> = {
+      admin: '/dashboard',
+      mentor: '/mentor/portal',
+      mentee: '/mentee/dashboard',
+    };
+    const dash = homeByRole[context.role?.toLowerCase() || ''] || '/home';
     return <Navigate to={dash} replace />;
   }
 

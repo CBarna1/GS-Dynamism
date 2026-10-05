@@ -1,11 +1,12 @@
 // src/context/AuthContext.tsx
 import { createContext, useState, useEffect, type ReactNode } from 'react';
+import { TOKEN_KEYS, clearStoredTokens, getStoredSession, tokenRole } from '../utils/authToken';
 
 interface AuthContextType {
   token: string | null;
   role: string | null;
   isLoading: boolean;
-  login: (token: string, role: string) => void;
+  login: (token: string, expectedRole: string) => boolean;
   logout: () => void;
 }
 
@@ -40,21 +41,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     /**
      * PERSISTENCE CHECK
-     * Check for admin, mentor, and mentee tokens on app load
+     * The role always comes from the server-signed token payload, never from
+     * which storage key or login page was used.
      */
-    const adminToken = localStorage.getItem('admin_token');
-    const mentorToken = localStorage.getItem('mentor_token');
-    const menteeToken = localStorage.getItem('mentee_token');
-    
-    if (adminToken) {
-      setToken(adminToken);
-      setRole('admin');
-    } else if (mentorToken) {
-      setToken(mentorToken);
-      setRole('mentor');
-    } else if (menteeToken) {
-      setToken(menteeToken);
-      setRole('mentee');
+    const session = getStoredSession();
+    if (session) {
+      setToken(session.token);
+      setRole(session.role);
     }
 
     setIsLoading(false);
@@ -96,31 +89,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [token, inactivityTimer]);
 
-  const login = (newToken: string, userRole: string) => {
-    console.log('[AuthContext] Login called with:', { userRole, tokenLength: newToken?.length });
-    if (userRole === 'admin') {
-      /**
-       * ADMIN LOGIN:
-       * Save token to localStorage so it persists across page reloads
-       */
-      localStorage.setItem('admin_token', newToken);
-      localStorage.removeItem('mentee_token');
-      console.log('[AuthContext] Saved admin_token to localStorage:', newToken.substring(0, 20) + '...');
-    } else {
-      // Mentees stay logged in via localStorage
-      localStorage.setItem('mentee_token', newToken);
-      localStorage.removeItem('admin_token');
-      console.log('[AuthContext] Saved mentee_token to localStorage');
+  /**
+   * Start a session. Returns false (and stores nothing) if the token was not
+   * issued for the expected role, e.g. a mentor account on the admin login page.
+   */
+  const login = (newToken: string, expectedRole: string) => {
+    const actualRole = tokenRole(newToken);
+    if (!actualRole || actualRole !== expectedRole) {
+      console.warn('[AuthContext] Refusing login: token role does not match portal', { expectedRole, actualRole });
+      return false;
     }
-    
+
+    // Only one session at a time
+    clearStoredTokens();
+    localStorage.setItem(TOKEN_KEYS[actualRole], newToken);
+
     setToken(newToken);
-    setRole(userRole);
+    setRole(actualRole);
+    return true;
   };
 
   const logout = () => {
     console.log('[AuthContext] Logout called');
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('mentee_token');
+    clearStoredTokens();
     localStorage.removeItem('mentee_user');
     setToken(null);
     setRole(null);
